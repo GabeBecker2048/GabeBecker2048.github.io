@@ -3,148 +3,475 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Gabe Becker · terminal</title>
+<title>gabe@gabebecker.com: ~</title>
+<meta name="description" content="Gabe Becker's site, as a terminal session.">
+<link rel="canonical" href="https://gabebecker.com/terminal/">
+<meta property="og:type" content="website">
+<meta property="og:title" content="gabe@gabebecker.com: ~">
+<meta property="og:description" content="Gabe Becker's site, as a terminal session.">
+<meta property="og:url" content="https://gabebecker.com/terminal/">
+<meta property="og:image" content="https://avatars.githubusercontent.com/u/78775796?v=4">
+<meta name="twitter:card" content="summary">
 <link rel="icon" href="https://avatars.githubusercontent.com/u/78775796?v=4">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
 <style>
-  /* dark (default) and a light "paper terminal" theme */
-  :root { --bg:#fbfaf7; --panel:#f1efe9; --fg:#2b2b2b; --dim:#77746c; --green:#3f7d20; --blue:#1f5fbf; --yellow:#8a5a00; --line:#dedad0; }
-  @media (prefers-color-scheme: dark) { :root { --bg:#16181d; --panel:#1d2026; --fg:#d7dae0; --dim:#858d9a; --green:#98c379; --blue:#61afef; --yellow:#e5c07b; --line:#2c3038; } }
+  :root {
+    --bg:#fbfaf7; --fg:#2b2b2b; --dim:#77746c; --line:#dedad0; --panel:#f1efe9;
+    --red:#b3261e; --green:#3f7d20; --yellow:#8a5a00; --blue:#1f5fbf; --magenta:#8a3ea8; --cyan:#0f7c86;
+    --ident:#83d467; --bar:24px;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root { --bg:#16181d; --fg:#d7dae0; --dim:#858d9a; --line:#2c3038; --panel:#1d2026;
+      --red:#e06c75; --green:#98c379; --yellow:#e5c07b; --blue:#61afef; --magenta:#c678dd; --cyan:#56b6c2; }
+  }
   * { box-sizing:border-box; }
-  body { margin:0; background:var(--bg); color:var(--fg); font:15px/1.7 "JetBrains Mono", ui-monospace, Menlo, Consolas, monospace; }
-  main { max-width:860px; margin:0 auto; padding:56px 20px 80px; }
+  html, body { margin:0; background:var(--bg); color:var(--fg); }
+  body { font:15px/1.6 "JetBrains Mono", ui-monospace, "SF Mono", Menlo, Consolas, monospace; }
   a { color:var(--blue); text-decoration:none; } a:hover { text-decoration:underline; }
-  .p { color:var(--green); } .d { color:var(--dim); } .y { color:var(--yellow); }
-  h1 { font-size:1.7rem; margin:2px 0 0; }
-  .role { font-size:1.05rem; }
-  .links { margin-top:12px; display:flex; flex-wrap:wrap; gap:8px 18px; align-items:center; }
-  .cta { border:1px solid var(--blue); padding:2px 10px; border-radius:4px; }
-  .cmd { margin:44px 0 10px; }
+  ::selection { background:var(--blue); color:var(--bg); }
 
-  /* search line, written as a command */
-  .searchline { display:flex; flex-wrap:wrap; align-items:center; gap:6px 8px; background:var(--panel); border:1px solid var(--line); border-radius:6px; padding:8px 12px; }
-  .searchline input { flex:1 1 180px; min-width:0; font:inherit; color:var(--fg); background:transparent; border:0; border-bottom:1px dashed var(--dim); padding:0 2px; }
-  .searchline input:focus { outline:none; border-bottom-color:var(--green); }
-  .searchline input::placeholder { color:var(--dim); }
-  .tagpick { position:relative; }
-  .tagpick summary { list-style:none; cursor:pointer; color:var(--yellow); }
+  #term { padding:14px 22px calc(var(--bar) + 72px); min-height:100vh; }
+  .line { white-space:pre-wrap; word-break:break-word; }
+  .txt { max-width:100ch; white-space:pre-wrap; }
+  .blk { margin-bottom:22px; }
+  .o { margin-top:4px; }
+  .dim { color:var(--dim); } .r { color:var(--red); } .g { color:var(--green); } .y { color:var(--yellow); }
+  .b { color:var(--blue); } .m { color:var(--magenta); } .c { color:var(--cyan); } .bold { font-weight:700; }
+  .ps1 .u { color:var(--green); font-weight:700; } .ps1 .p { color:var(--blue); font-weight:700; }
+  .pending { display:none; }
+  .lastlogin { display:flex; justify-content:space-between; gap:16px; color:var(--dim); margin-bottom:14px; }
+
+  /* neofetch */
+  .neo { display:flex; gap:4ch; align-items:flex-start; flex-wrap:wrap; }
+  .art { display:grid; grid-template-columns:repeat(5, 2.4ch); grid-auto-rows:2.4ch; padding:2.4ch; background:#f0f0f0; border-radius:4px; }
+  .art span.on { background:var(--ident); }
+  .neo .k { color:var(--ident); font-weight:700; }
+  .neo .title { font-weight:700; }
+  .palette span { display:inline-block; width:3ch; height:1.1em; vertical-align:middle; }
+
+  /* ls -l projects/ */
+  .ls { display:grid; grid-template-columns:auto auto auto 1fr; column-gap:2ch; }
+  .ls .name a { color:var(--blue); font-weight:700; }
+  .ls .name a.ro { color:var(--cyan); }
+  .ls .more { grid-column:4; margin-bottom:10px; }
+  .ls .install::before { content:"$ "; color:var(--green); }
+  .ls .install { color:var(--dim); }
+  .ls .tags button { font:inherit; font-size:.9em; background:none; border:0; padding:0; margin-right:1.2ch; color:var(--dim); cursor:pointer; white-space:nowrap; }
+  .ls .tags button:hover, .ls .tags button.on { color:var(--yellow); }
+
+  /* inline grep + --tag picker on the ls command line */
+  #q { font:inherit; color:var(--fg); background:transparent; border:0; border-bottom:1px dashed var(--dim); padding:0; width:18ch; outline:none; }
+  #q:focus { border-bottom-color:var(--green); }
+  #q::placeholder { color:var(--dim); }
+  .tagpick { display:inline-block; position:relative; }
+  .tagpick summary { list-style:none; cursor:pointer; color:var(--yellow); display:inline; }
   .tagpick summary::-webkit-details-marker { display:none; }
-  .tagpick summary::before { content:"--tag="; color:var(--dim); }
-  .tagpick summary .tp-label::after { content:"[select ▾]"; }
-  .tagpick summary .tp-label { font-size:0; } .tagpick summary .tp-label::after { font-size:15px; }
-  .tp-menu { position:absolute; right:0; top:calc(100% + 6px); z-index:5; background:var(--panel); border:1px solid var(--line); border-radius:6px; padding:6px 4px; width:230px; max-height:320px; overflow:auto; box-shadow:0 8px 28px rgba(0,0,0,.3); }
-  .tp-menu label { display:flex; gap:8px; align-items:center; padding:1px 8px; cursor:pointer; }
+  .tagpick summary::before { content:"--tag="; color:var(--fg); }
+  .tagpick summary::after { content:" ▾"; color:var(--dim); }
+  .tp-n { display:none; }
+  .tp-menu { position:absolute; left:0; top:calc(100% + 4px); z-index:5; background:var(--panel); border:1px solid var(--line); padding:4px 0; width:24ch; max-height:300px; overflow:auto; box-shadow:0 8px 28px rgba(0,0,0,.35); }
+  .tp-menu label { display:flex; gap:1ch; align-items:center; padding:0 1ch; cursor:pointer; }
   .tp-menu label:hover { background:var(--bg); }
   .tp-menu input { accent-color:var(--green); }
   .tp-c { margin-left:auto; color:var(--dim); }
-  .active { display:flex; flex-wrap:wrap; gap:8px; margin-top:8px; }
-  .chip { font:inherit; font-size:.85rem; background:none; border:1px solid var(--yellow); color:var(--yellow); border-radius:3px; padding:0 6px; cursor:pointer; }
-  .chip.clear { border-color:transparent; color:var(--dim); }
-  .total { color:var(--dim); margin:12px 0 4px; }
 
-  .row { display:grid; grid-template-columns:230px 1fr; gap:2px 16px; padding:10px 0; border-bottom:1px dashed var(--line); }
-  .row .n a { color:var(--yellow); font-weight:700; }
-  .row .tags { font-size:.85rem; }
-  .row .tags button { white-space:nowrap; font:inherit; background:none; border:0; padding:0; margin-right:10px; color:var(--dim); cursor:pointer; }
-  .row .tags button:hover, .row .tags button.on { color:var(--green); }
-  .row .install { color:var(--dim); font-size:.88rem; }
-  .row .install::before { content:"$ "; color:var(--green); }
-  pre { margin:0; font:inherit; white-space:pre-wrap; }
+  /* experience */
+  .xp { display:grid; grid-template-columns:auto 1fr; column-gap:3ch; row-gap:2px; }
+  .xp .when { color:var(--yellow); white-space:nowrap; }
+  .xp .what { max-width:90ch; }
 
-  /* optional interactive shell */
-  .shell { margin-top:8px; background:var(--panel); border:1px solid var(--line); border-radius:6px; padding:12px 14px; }
-  .shell .out { white-space:pre-wrap; }
-  .shell .inline { display:flex; gap:8px; }
-  .shell input { flex:1; min-width:0; font:inherit; color:var(--fg); background:transparent; border:0; outline:none; caret-color:var(--green); }
-  @media (max-width:640px) { .row { grid-template-columns:1fr; } }
+  /* live prompt */
+  #live { position:relative; }
+  #cmd { position:absolute; inset:0; width:100%; opacity:0; font-size:16px; border:0; padding:0; background:transparent; color:transparent; }
+  .cursor { background:var(--fg); color:var(--bg); animation:blink 1.1s steps(1) infinite; }
+  .cursor.off { background:transparent; color:inherit; outline:1px solid var(--fg); outline-offset:-1px; animation:none; }
+  @keyframes blink { 50% { background:transparent; color:inherit; } }
+  @media (prefers-reduced-motion: reduce) { .cursor { animation:none; } html { scroll-behavior:auto; } }
+
+  /* tmux status bar */
+  #tmux { position:fixed; left:0; right:0; bottom:0; height:var(--bar); line-height:var(--bar); background:var(--green); color:var(--bg); font-size:13px; display:flex; justify-content:space-between; padding:0 6px; white-space:nowrap; overflow:hidden; z-index:10; }
+  #tmux .sess { margin-right:1ch; }
+  #tmux .sess.prefix { background:var(--yellow); }
+  #tmux .win { cursor:pointer; padding:0 .6ch; }
+  #tmux .win.cur { font-weight:700; }
+  #tmux .win:hover { text-decoration:underline; }
+
+  /* tappable commands for touch screens */
+  #chips { scrollbar-width:none; position:fixed; left:0; right:0; bottom:var(--bar); display:none; gap:8px; padding:8px 12px; overflow-x:auto; background:var(--panel); border-top:1px solid var(--line); z-index:9; }
+  #chips button { font:inherit; font-size:13px; color:var(--fg); background:var(--bg); border:1px solid var(--line); border-radius:4px; padding:4px 10px; white-space:nowrap; }
+  @media (pointer:coarse), (max-width:700px) { #chips { display:flex; } #term { padding-bottom:calc(var(--bar) + 120px); } }
+  @media (max-width:700px) {
+    body { font-size:13.5px; } #term { padding-left:12px; padding-right:12px; }
+    .ls { grid-template-columns:auto 1fr; } .ls .perm, .ls .own { display:none; } .ls .more { grid-column:1 / -1; }
+    .xp { grid-template-columns:1fr; } .xp .what { margin-bottom:8px; }
+    #tmux .clock { display:none; }
+  }
 </style>
 </head>
 <body>
-<main>
-  <div class="d" style="display:flex;justify-content:space-between;gap:12px"><span>~/gabe $ whoami</span><a href="/">← regular site</a></div>
-  <h1>Gabe Becker</h1>
-  <div class="role">Backend Software Engineer · Python, APIs, databases, Docker, Linux</div>
-  <div class="links">
-    <a class="cta" href="#">resume.pdf ↓</a>
-    <a href="https://github.com/GabeBecker2048">github</a>
-    <a href="#">linkedin</a>
-    <a href="#">email</a>
+<noscript><p style="padding:20px">This page is an interactive terminal and needs JavaScript. The <a href="/">regular site</a> has everything.</p></noscript>
+
+<div id="term">
+  <div class="lastlogin"><span id="lastlogin"></span><a href="/">← regular site</a></div>
+
+  <div class="blk pending" id="about" data-win="0" data-cmd="neofetch"><div class="line"><span class="ps"></span> <span class="cmdtext"></span></div><div class="o" id="o-neo"></div></div>
+  <div class="blk pending" data-win="0" data-cmd="cat about.txt"><div class="line"><span class="ps"></span> <span class="cmdtext"></span></div><div class="o" id="o-about"></div></div>
+  <div class="blk pending" id="projects" data-win="1" data-cmd="ls -l projects/ | grep -i ">
+    <div class="line"><span class="ps"></span> <span class="cmdtext"></span><span class="lsctl pending"><input id="q" type="search" placeholder="type to filter" aria-label="Filter projects" autocomplete="off" spellcheck="false"> <span id="tags"></span></span></div>
+    <div class="o" id="o-ls"></div>
   </div>
+  <div class="blk pending" id="experience" data-win="2" data-cmd="cat experience.txt"><div class="line"><span class="ps"></span> <span class="cmdtext"></span></div><div class="o" id="o-xp"></div></div>
+  <div class="blk pending" id="ai" data-win="3" data-cmd="cat ai-stance.md"><div class="line"><span class="ps"></span> <span class="cmdtext"></span></div><div class="o" id="o-ai"></div></div>
 
-  <div class="cmd"><span class="p">~/gabe $</span> cat about.txt</div>
-  <div>[Plain sentences, not jokes: what you build, what kind of backend role you want, and where you're based. This is the part recruiters actually read.]</div>
+  <div id="out"></div>
+  <div class="line pending" id="live"><span class="ps"></span> <span id="pre"></span><span class="cursor off" id="cur"> </span><span id="post"></span><input id="cmd" aria-label="Type a command" autocomplete="off" autocapitalize="off" spellcheck="false"></div>
+</div>
 
-  <div class="cmd"><span class="p">~/gabe $</span> cat experience.txt</div>
-<pre><span class="y">20XX-now </span>  [Job title] @ [Company]
-           <span class="d">[One line on what you built and with what]</span>
-<span class="y">20XX-20XX</span>  [Job title] @ [Company]
-<span class="y">20XX-20XX</span>  [Degree], [School]</pre>
+<div id="chips"></div>
+<div id="tmux">
+  <span><span class="sess">[gabe]</span><span id="wins"></span></span>
+  <span class="clock" id="clock"></span>
+</div>
 
-  <div class="cmd"><span class="p">~/gabe $</span> ls projects/</div>
-  <div class="searchline">
-    <span class="d">| grep -i</span>
-    <input id="q" type="search" placeholder="type to search…" aria-label="Search projects" autocomplete="off">
-    <div id="tags"></div>
-  </div>
-  <div class="active" id="active"></div>
-  <div class="total" id="count"></div>
-  <div id="list"></div>
-
-  <div class="cmd"><span class="p">~/gabe $</span> ./shell <span class="d"># optional: try typing "help"</span></div>
-  <div class="shell" id="shell">
-    <div class="out" id="out"></div>
-    <div class="inline"><span class="p">~/gabe $</span><input id="cmd" aria-label="Shell command" autocomplete="off" spellcheck="false"></div>
-  </div>
-</main>
 <script src="/assets/projects.js"></script>
 <script>
-const f = setupFilter({
-  search: document.getElementById("q"),
-  tagsEl: document.getElementById("tags"),
-  activeEl: document.getElementById("active"),
-  label: "tag",
-  render(list, state) {
-    document.getElementById("count").textContent = `total ${list.length}`;
-    document.getElementById("list").innerHTML = list.length ? list.map(p => `
-      <div class="row">
-        <div class="n"><a href="${p.page}">${esc(p.name)}/</a><br><span class="d">${p.version ? "v" + p.version : "archived"} · ${p.updated.slice(0, 7)}</span></div>
-        <div>${esc(p.desc)}
-          ${p.install ? `<div class="install">${esc(p.install)}</div>` : ""}
-          <div class="tags">${p.tags.map(t => `<button data-tag="${esc(t)}" class="${state.tags.has(t) ? "on" : ""}">#${esc(t.toLowerCase())}</button>`).join("")}</div>
-        </div>
-      </div>`).join("") : `<div class="d" style="padding:10px 0">grep: no matches. <a href="#" data-clear>reset filters</a></div>`;
+"use strict";
+const PS1 = `<span class="ps1"><span class="u">gabe@gabebecker.com</span>:<span class="p">~</span>$</span>`;
+document.querySelectorAll(".ps").forEach(el => (el.outerHTML = PS1));
+const $ = id => document.getElementById(id);
+const sleep = ms => new Promise(r => setTimeout(r, ms));
+const norm = s => (s || "").replace(/\s+/g, " ").trim();
+const toBottom = () => scrollTo(0, document.documentElement.scrollHeight);
+const RESUME = "/resume.pdf";
+
+// ---------- content, read from the real pages so it never drifts ----------
+const docs = {};
+setTimeout(() => { getDoc("/").catch(() => {}); getDoc("/ai/").catch(() => {}); }); // start both fetches right away
+function getDoc(url) {
+  return (docs[url] ||= fetch(url).then(r => { if (!r.ok) throw new Error(r.status); return r.text(); })
+    .then(t => new DOMParser().parseFromString(t, "text/html")));
+}
+async function readHome() {
+  const d = await getDoc("/");
+  return {
+    role: norm(d.querySelector(".profile .role")?.textContent),
+    skills: [...d.querySelectorAll(".profile .skill")].map(s => norm(s.textContent)),
+    about: norm(d.querySelector("#about .lead")?.textContent),
+    now: norm(d.querySelector("#now")?.textContent),
+    jobs: [...d.querySelectorAll("#experience .job")].map(j => ({
+      title: norm(j.querySelector(".head b")?.textContent),
+      when: norm(j.querySelector(".when")?.textContent),
+      text: norm(j.querySelector("p")?.textContent),
+    })),
+  };
+}
+async function readAI() {
+  const d = await getDoc("/ai/");
+  const lines = [`<span class="m bold"># My stance on AI</span>`, `<span class="dim">${esc(norm(d.querySelector(".updated")?.textContent))}</span>`, ""];
+  for (const el of d.querySelector("#ai-stance")?.children || []) {
+    const t = esc(norm(el.textContent));
+    if (/^H[1-6]$/.test(el.tagName)) lines.push(`<span class="m bold">## ${t}</span>`, "");
+    else if (el.tagName === "UL" || el.tagName === "OL") { [...el.children].forEach((li, i) => lines.push(`${el.tagName === "OL" ? i + 1 + "." : "-"} ${esc(norm(li.textContent))}`)); lines.push(""); }
+    else if (el.tagName === "BLOCKQUOTE") lines.push(`<span class="dim">&gt; ${t}</span>`, "");
+    else lines.push(t, "");
+  }
+  return lines.join("\n").trim();
+}
+const failed = (file, href) => `<span class="r">cat: ${file}: could not read it.</span> Try the <a href="${href}">regular page</a>.`;
+
+// ---------- renderers ----------
+const IDENTICON = [".###.", ".#.#.", "..#..", ".....", ".#.#."]; // GabeBecker2048's GitHub avatar
+async function neofetch() {
+  let h; try { h = await readHome(); } catch { h = { role: "Backend Software Engineer", skills: [] }; }
+  const art = IDENTICON.join("").split("").map(c => `<span class="${c === "#" ? "on" : ""}"></span>`).join("");
+  const active = PROJECTS.filter(p => p.status === "active").length;
+  const row = (k, v) => `<div><span class="k">${k}</span>: ${v}</div>`;
+  return `<div class="neo"><div class="art" aria-hidden="true">${art}</div><div>
+    <div class="title"><span class="g">gabe</span>@<span class="g">gabebecker.com</span></div>
+    <div class="dim">-------------------</div>
+    ${row("Name", "Gabe Becker")}
+    ${row("Role", esc(h.role))}
+    ${row("Skills", esc(h.skills.slice(0, 7).join(", ")))}
+    ${row("Projects", `${PROJECTS.length} (${active} active) · <a href="#" data-run="ls -l projects/">ls -l projects/</a>`)}
+    ${row("Site", `<a href="/">gabebecker.com</a>`)}
+    ${row("GitHub", `<a href="https://github.com/GabeBecker2048">GabeBecker2048</a>`)}
+    ${row("Résumé", `<a href="${RESUME}">resume.pdf</a>`)}
+    ${row("Shell", `type <a href="#" data-run="help">help</a>, or click any command`)}
+    <div class="palette" style="margin-top:6px">${["dim", "red", "green", "yellow", "blue", "magenta", "cyan", "fg"].map(c => `<span style="background:var(--${c})"></span>`).join("")}</div>
+  </div></div>`;
+}
+async function aboutTxt() {
+  try { const h = await readHome(); return `<div class="txt">${esc(h.about)}\n\n<span class="y">${esc(h.now.split(":")[0])}:</span>${esc(h.now.slice(h.now.indexOf(":") + 1))}</div>`; }
+  catch { return failed("about.txt", "/#about"); }
+}
+async function experienceTxt() {
+  try {
+    const h = await readHome();
+    return `<div class="xp">${h.jobs.map(j => `<div class="when">${esc(j.when)}</div><div class="what">${esc(j.title)}${j.text ? `\n<span class="dim">${esc(j.text)}</span>` : ""}</div>`).join("")}</div>
+      <div class="dim" style="margin-top:6px">full history: <a href="${RESUME}">resume.pdf</a></div>`;
+  } catch { return failed("experience.txt", "/#experience"); }
+}
+async function aiTxt() {
+  try { return `<div class="txt">${await readAI()}</div>`; } catch { return failed("ai-stance.md", "/ai/"); }
+}
+function lsRows(list, state) {
+  return `<div class="dim">total ${list.length}</div><div class="ls">${list.map(p => {
+    const perm = p.private ? "drwx------" : p.status === "archived" ? "dr-xr-xr-x" : "drwxr-xr-x";
+    return `<span class="perm dim">${perm}</span><span class="own dim">gabe</span><span class="dim">${p.updated}</span>
+      <span class="name"><a class="${p.status === "archived" ? "ro" : ""}" href="${p.page}">${esc(p.name)}/</a>${p.version ? ` <span class="dim">v${p.version}</span>` : ""}</span>
+      <div class="more"><div class="txt">${esc(p.desc)}</div>
+        ${p.install ? `<div class="install">${esc(p.install)}</div>` : ""}
+        <div class="tags">${p.tags.map(t => `<button data-tag="${esc(t)}" class="${state?.tags.has(t) ? "on" : ""}">#${esc(t.toLowerCase())}</button>`).join("")}</div>
+      </div>`;
+  }).join("")}</div>`;
+}
+
+// ---------- the scripted session (with a short typing intro) ----------
+let skip = false;
+const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
+let seen = false; try { seen = sessionStorage.getItem("term-intro") === "1"; sessionStorage.setItem("term-intro", "1"); } catch {}
+const animate = !reduce && !seen && !location.hash; // deep links (#projects) skip the intro
+
+async function typeOut(el, text) {
+  if (!animate || skip) { el.textContent = text; return; }
+  for (const ch of text) { if (skip) { el.textContent = text; return; } el.textContent += ch; await sleep(12); }
+}
+
+const d = new Date();
+$("lastlogin").textContent = `Last login: ${d.toDateString()} ${d.toTimeString().slice(0, 5)} on ttys000`;
+
+let filter;
+const RENDER = {
+  "neofetch": async () => ($("o-neo").innerHTML = await neofetch()),
+  "cat about.txt": async () => ($("o-about").innerHTML = await aboutTxt()),
+  "ls -l projects/ | grep -i ": async () => {
+    $("tags").innerHTML = "";
+    filter = setupFilter({
+      search: $("q"), tagsEl: $("tags"), label: "any",
+      render(list, state) {
+        $("tags").querySelector(".tp-label").textContent = state.tags.size ? [...state.tags].join(",").toLowerCase() : "any";
+        $("o-ls").innerHTML = list.length ? lsRows(list, state) : `<span class="dim">(no matches)</span> <a href="#" data-clear>reset</a>`;
+      },
+    });
+    document.querySelector(".lsctl").classList.remove("pending");
   },
+  "cat experience.txt": async () => ($("o-xp").innerHTML = await experienceTxt()),
+  "cat ai-stance.md": async () => ($("o-ai").innerHTML = await aiTxt()),
+};
+
+async function intro() {
+  for (const blk of document.querySelectorAll(".blk")) {
+    blk.classList.remove("pending");
+    await typeOut(blk.querySelector(".cmdtext"), blk.dataset.cmd);
+    await RENDER[blk.dataset.cmd]();
+    if (animate && !skip) await sleep(40);
+  }
+  $("live").classList.remove("pending");
+  renderPrompt();
+  markWindow();
+  if (/^#(about|projects|experience|ai)$/.test(location.hash)) gotoWin(WINDOWS.indexOf(location.hash.slice(1)), true);
+}
+["keydown", "pointerdown", "wheel", "touchstart"].forEach(ev => addEventListener(ev, () => (skip = true), { once: true, passive: true }));
+
+// ---------- the live prompt ----------
+const cmd = $("cmd"), out = $("out");
+const hist = []; let hIdx = 0;
+
+function renderPrompt() {
+  const v = cmd.value, i = cmd.selectionStart ?? v.length;
+  $("pre").textContent = v.slice(0, i);
+  $("cur").textContent = v[i] || " ";
+  $("post").textContent = v.slice(i + 1);
+  $("cur").classList.toggle("off", document.activeElement !== cmd);
+}
+["input", "keyup", "select", "focus", "blur", "click"].forEach(ev => cmd.addEventListener(ev, () => setTimeout(renderPrompt)));
+cmd.addEventListener("input", toBottom);
+
+const print = html => { const div = document.createElement("div"); div.className = "o line"; div.innerHTML = html; out.appendChild(div); };
+const echo = line => { const div = document.createElement("div"); div.className = "line"; div.style.marginTop = "6px"; div.innerHTML = `${PS1} ${esc(line)}`; out.appendChild(div); };
+
+const SLUGS = PROJECTS.map(p => p.slug);
+const FILES = ["about.txt", "experience.txt", "ai-stance.md", "projects/"];
+const PAGES = { home: "/", about: "/", projects: "/projects/", ai: "/ai/", github: "https://github.com/GabeBecker2048", resume: RESUME };
+const clean = a => (a || "").replace(/^(\.\/|~\/)/, "").replace(/^projects\//, "");
+const bySlug = a => PROJECTS.find(p => p.slug === clean(a).replace(/\/$/, ""));
+const run = (s, label = s) => `<a href="#" data-run="${esc(s)}">${esc(label)}</a>`;
+
+async function readme(p) {
+  if (p.private) return `<span class="r">cat: ${p.slug}/README.md: Permission denied</span> <span class="dim">(private repository)</span> · ${run("open " + p.slug)}`;
+  try {
+    const r = await fetch(`https://raw.githubusercontent.com/GabeBecker2048/${p.slug}/main/README.md`);
+    if (!r.ok) throw 0;
+    const lines = (await r.text()).split("\n"), N = 40;
+    return `<div class="txt">${esc(lines.slice(0, N).join("\n"))}</div>` +
+      (lines.length > N ? `<div class="dim">-- ${lines.length - N} more lines. ${run("open " + p.slug)} for the full page --</div>` : "");
+  } catch { return `<span class="r">cat: ${p.slug}/README.md: could not fetch it</span>`; }
+}
+
+const COMMANDS = {
+  help: () => print(`<div class="txt">Commands (click one to run it):
+  ${run("ls")} [-l] [projects/]       list files
+  ${run("cat about.txt")}               print a file; try ${run("cat chesssnake/README.md")}
+  ${run("open chesssnake")}             open a project, or: home, projects, ai, github, resume
+  grep &lt;text&gt;                 filter the project list
+  tag &lt;name&gt;, ${run("tags")}           filter by tag, list tags
+  ${run("whoami")}  ${run("resume")}  ${run("history")}  ${run("clear")}  ${run("exit")}
+
+<span class="dim">Tab completes · ↑/↓ history · Ctrl+L clears · Ctrl+C cancels · Ctrl+B then 0-3 switches window</span></div>`),
+  ls: async args => {
+    const long = args.includes("-l"), target = args.filter(a => !a.startsWith("-"))[0];
+    if (!target) return print(long ? `<div class="ls" style="grid-template-columns:auto auto 1fr">${FILES.map(f => `<span class="dim">${f.endsWith("/") ? "drwxr-xr-x" : "-rw-r--r--"}</span><span class="dim">gabe</span>${f.endsWith("/") ? `<a class="bold" href="#" data-run="ls -l projects/">projects/</a>` : run("cat " + f, f)}`).join("")}</div>`
+      : FILES.map(f => (f.endsWith("/") ? `<a class="bold" href="#" data-run="ls projects/">${f}</a>` : run("cat " + f, f))).join("  "));
+    if (/^(\.\/|~\/)?projects\/?$/.test(target)) return print(long ? lsRows(PROJECTS) : PROJECTS.map(p => `<a class="bold" href="${p.page}">${p.slug}/</a>`).join("  "));
+    const p = bySlug(target);
+    if (p) return print(p.private ? `<span class="r">ls: cannot open directory '${p.slug}/': Permission denied</span>` : run(`cat ${p.slug}/README.md`));
+    print(`<span class="r">ls: cannot access '${esc(target)}': No such file or directory</span>`);
+  },
+  cat: async args => {
+    const f = clean(args[0]);
+    if (!f) return print(`<span class="dim">usage: cat &lt;file&gt;  (try ${run("ls")})</span>`);
+    if (f === "about.txt") return print(await aboutTxt());
+    if (f === "experience.txt") return print(await experienceTxt());
+    if (f === "ai-stance.md") return print(await aiTxt());
+    const m = f.match(/^([^/]+)\/README\.md$/i), p = m && bySlug(m[1]);
+    if (p) return print(await readme(p));
+    if (bySlug(f)) return print(`<span class="r">cat: ${esc(f)}: Is a directory</span> <span class="dim">try</span> ${run(`cat ${bySlug(f).slug}/README.md`)}`);
+    print(`<span class="r">cat: ${esc(f)}: No such file or directory</span>`);
+  },
+  open: args => {
+    const a = clean(args[0]).replace(/\/$/, "").toLowerCase(), p = bySlug(a), url = p ? p.page : PAGES[a];
+    if (!url) return print(`<span class="r">open: ${esc(args[0] || "")}: not found</span> <span class="dim">(projects: ${SLUGS.join(", ")})</span>`);
+    print(`<span class="dim">opening ${esc(url)} …</span>`); setTimeout(() => (location.href = url), 300);
+  },
+  grep: args => {
+    $("q").value = args.join(" ").replace(/^-i\s*/, "").replace(/^["']|["']$/g, "");
+    $("q").dispatchEvent(new Event("input"));
+    print(`<span class="dim">filtered the project list above</span> · <a href="#" data-win="1">jump to it</a>`);
+  },
+  tag: args => {
+    const t = allTags().find(x => x.tag.toLowerCase() === (args[0] || "").toLowerCase());
+    if (!t) return print(`<span class="r">tag: ${esc(args[0] || "")}: unknown tag</span> (see ${run("tags")})`);
+    filter.state.tags.add(t.tag); filter.update();
+    print(`<span class="dim">filtered the project list by ${esc(t.tag)}</span> · <a href="#" data-win="1">jump to it</a>`);
+  },
+  tags: () => print(allTags().map(t => `<a href="#" data-run="tag ${esc(t.tag.toLowerCase())}">${esc(t.tag.toLowerCase())}</a><span class="dim">(${t.count})</span>`).join("  ")),
+  whoami: async () => print(await neofetch()),
+  resume: () => COMMANDS.open(["resume"]),
+  history: () => print(hist.map((h, i) => `${String(i + 1).padStart(4)}  ${esc(h)}`).join("\n") || `<span class="dim">(empty)</span>`),
+  clear: () => { out.innerHTML = ""; toBottom(); },
+  pwd: () => print("/home/gabe"),
+  echo: args => print(esc(args.join(" "))),
+  date: () => print(esc(new Date().toString())),
+  cd: () => print(`<span class="dim">this shell stays in ~. try ${run("open chesssnake")}</span>`),
+  exit: () => { print("logout"); setTimeout(() => (location.href = "/"), 300); },
+  sudo: async args => {
+    if (args[0] !== "hire-me") return print(`gabe is not in the sudoers file. This incident will be reported.`);
+    print(`[sudo] password for recruiter: ********`); await sleep(500);
+    print(`<span class="g">access granted.</span> opening <a href="${RESUME}">resume.pdf</a> …`); setTimeout(() => (location.href = RESUME), 900);
+  },
+};
+
+async function execute(line) {
+  line = line.trim();
+  echo(line);
+  if (line) { hist.push(line); }
+  hIdx = hist.length;
+  if (!line) return toBottom();
+  const [name, ...args] = line.split(/\s+/);
+  const fn = COMMANDS[name];
+  if (fn) await fn(args); else print(`<span class="r">bash: ${esc(name)}: command not found</span> <span class="dim">(try ${run("help")})</span>`);
+  toBottom();
+}
+
+function complete() {
+  const v = cmd.value, words = v.split(/\s+/), last = words[words.length - 1];
+  let pool;
+  if (words.length === 1) pool = Object.keys(COMMANDS).filter(c => c !== "sudo");
+  else if (words[0] === "open") pool = [...SLUGS, ...Object.keys(PAGES)];
+  else if (words[0] === "tag") pool = allTags().map(t => t.tag.toLowerCase());
+  else pool = [...FILES, ...SLUGS.map(s => s + "/"), ...SLUGS.map(s => s + "/README.md")];
+  const hits = pool.filter(c => c.startsWith(last));
+  if (!hits.length) return;
+  let common = hits[0];
+  for (const h of hits) while (!h.startsWith(common)) common = common.slice(0, -1);
+  if (hits.length > 1 && common === last) { echo(v); print(hits.join("  ")); toBottom(); return; }
+  words[words.length - 1] = common + (hits.length === 1 && !common.endsWith("/") ? " " : "");
+  cmd.value = words.join(" ");
+}
+
+cmd.addEventListener("keydown", e => {
+  if (e.key === "Enter") { e.preventDefault(); const v = cmd.value; cmd.value = ""; execute(v).then(renderPrompt); }
+  else if (e.key === "Tab") { e.preventDefault(); complete(); }
+  else if (e.key === "ArrowUp" || e.key === "ArrowDown") {
+    e.preventDefault();
+    hIdx = Math.max(0, Math.min(hist.length, hIdx + (e.key === "ArrowUp" ? -1 : 1)));
+    cmd.value = hist[hIdx] ?? "";
+    cmd.setSelectionRange(cmd.value.length, cmd.value.length);
+  }
+  else if (e.ctrlKey && e.key.toLowerCase() === "l") { e.preventDefault(); COMMANDS.clear(); }
+  else if (e.ctrlKey && e.key.toLowerCase() === "c" && !getSelection().toString()) { e.preventDefault(); echo(cmd.value + "^C"); cmd.value = ""; }
+  else if (e.ctrlKey && e.key.toLowerCase() === "u") { e.preventDefault(); cmd.value = ""; }
+  setTimeout(renderPrompt);
 });
 
-// A tiny shell. Everything it shows is also on the page, so nobody has to use it.
-const out = document.getElementById("out"), cmd = document.getElementById("cmd");
-const print = s => { out.textContent += s + "\n"; };
-const byName = n => PROJECTS.find(p => p.name === n.replace(/\/$/, ""));
-const files = { "about.txt": "[about text]", "experience.txt": "[experience text]" };
-const COMMANDS = {
-  help: () => print("commands: ls, cat <file>, open <project>, grep <text>, tag <name>, tags, resume, clear, exit"),
-  ls: () => print(PROJECTS.map(p => p.name + "/").join("  ") + "  about.txt  experience.txt"),
-  cat: a => print(files[a] || (byName(a || "") ? byName(a).desc : `cat: ${a}: No such file`)),
-  open: a => { const p = byName(a || ""); p ? (print(`opening ${p.page}`), location.href = p.page) : print(`open: ${a}: not found`); },
-  grep: a => { document.getElementById("q").value = a || ""; document.getElementById("q").dispatchEvent(new Event("input")); print(`filtered projects by "${a || ""}"`); },
-  tag: a => { const t = allTags().find(x => x.tag.toLowerCase() === (a || "").toLowerCase()); if (!t) return print(`tag: ${a}: unknown (try "tags")`); f.state.tags.add(t.tag); f.update(); print(`filtered projects by tag ${t.tag}`); },
-  tags: () => print(allTags().map(t => `${t.tag}(${t.count})`).join("  ")),
-  resume: () => print("resume.pdf: [link]"),
-  whoami: () => print("Gabe Becker, backend software engineer"),
-  clear: () => { out.textContent = ""; },
-  exit: () => { print("logout"); location.href = "/"; },
-};
-cmd.addEventListener("keydown", e => {
-  if (e.key !== "Enter") return;
-  const line = cmd.value.trim(); cmd.value = "";
-  print("~/gabe $ " + line);
-  if (!line) return;
-  const [c, ...rest] = line.split(/\s+/);
-  (COMMANDS[c] || (() => print(`${c}: command not found. Try "help".`)))(rest.join(" "));
+// Typing anywhere goes to the prompt. Clicking empty space focuses it without scrolling.
+document.addEventListener("keydown", e => {
+  if (e.defaultPrevented || e.ctrlKey || e.metaKey || e.altKey || e.key.length !== 1) return;
+  if (/^(INPUT|TEXTAREA|SELECT)$/.test(document.activeElement.tagName) || $("live").classList.contains("pending")) return;
+  cmd.focus({ preventScroll: true }); toBottom();
 });
-document.getElementById("shell").addEventListener("click", () => cmd.focus());
-print('Type "help" to see the commands.');
+$("term").addEventListener("click", e => {
+  if (e.target.closest("a, button, input, details, .tp-menu") || getSelection().toString()) return;
+  if (matchMedia("(pointer: coarse)").matches) return; // on phones only the prompt line itself opens the keyboard
+  cmd.focus({ preventScroll: true }); renderPrompt();
+});
+
+// Clickable commands (help output, neofetch, chips).
+document.addEventListener("click", e => {
+  const r = e.target.closest("[data-run]");
+  if (r) { e.preventDefault(); execute(r.dataset.run).then(renderPrompt); }
+});
+
+// ---------- tmux status bar: windows follow the scroll position ----------
+const WINDOWS = ["about", "projects", "experience", "ai"];
+let curWin = 0, lastWin = null;
+$("wins").innerHTML = WINDOWS.map((w, i) => `<span class="win" data-win="${i}">${i}:${w}</span>`).join("");
+function firstBlock(i) { return document.querySelector(`.blk[data-win="${i}"]`); }
+function gotoWin(i, instant) { firstBlock(i)?.scrollIntoView({ behavior: reduce || instant ? "instant" : "smooth", block: "start" }); }
+function markWindow() {
+  let cur = 0;
+  WINDOWS.forEach((_, i) => { const b = firstBlock(i); if (b && b.getBoundingClientRect().top < innerHeight * 0.4) cur = i; });
+  if (cur !== curWin) { lastWin = curWin; curWin = cur; }
+  document.querySelectorAll("#wins .win").forEach((el, i) => {
+    el.classList.toggle("cur", i === curWin);
+    el.textContent = `${i}:${WINDOWS[i]}${i === curWin ? "*" : i === lastWin ? "-" : ""}`;
+  });
+}
+addEventListener("scroll", markWindow, { passive: true });
+document.addEventListener("click", e => {
+  const w = e.target.closest("[data-win]:not(.blk)");
+  if (w) { e.preventDefault(); gotoWin(+w.dataset.win); }
+});
+let prefix = false;
+addEventListener("keydown", e => {
+  if (e.ctrlKey && e.key.toLowerCase() === "b") { e.preventDefault(); prefix = true; document.querySelector("#tmux .sess").classList.add("prefix"); return; }
+  if (prefix) {
+    prefix = false; document.querySelector("#tmux .sess").classList.remove("prefix");
+    if (/^[0-3]$/.test(e.key)) { e.preventDefault(); e.stopImmediatePropagation(); gotoWin(+e.key); }
+  }
+}, true);
+function tick() {
+  const n = new Date(), mon = n.toLocaleString("en", { month: "short" });
+  $("clock").textContent = `"gabebecker.com" ${n.toTimeString().slice(0, 5)} ${String(n.getDate()).padStart(2, "0")}-${mon}-${String(n.getFullYear()).slice(2)}`;
+}
+tick(); setInterval(tick, 15000);
+
+// ---------- touch screens: tappable commands ----------
+$("chips").innerHTML = ["help", "ls -l projects/", "cat about.txt", "cat ai-stance.md", "tags", "whoami", "exit"]
+  .map(c => `<button data-run="${c}">${c}</button>`).join("");
+
+intro();
 </script>
 </body>
 </html>
