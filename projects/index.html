@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Projects · Gabe Becker</title>
+<meta name="description" content="Open-source projects by Gabe Becker, with install guides and docs.">
+<link rel="icon" href="https://avatars.githubusercontent.com/u/78775796?v=4">
+<link rel="stylesheet" href="/assets/site.css">
+</head>
+<body>
+<header data-topbar="projects"></header>
+<main class="page">
+  <h1>Projects</h1>
+  <p class="lede">Open-source tools I build and maintain. Each project has its own page with install steps, docs, and where to report bugs.</p>
+  <div class="sticky">
+    <div class="toolbar">
+      <input id="q" type="search" placeholder="Search projects  ( / )" aria-label="Search projects">
+      <div id="tags"></div>
+    </div>
+    <div class="status"><span id="count"></span><span class="active" id="active"></span></div>
+  </div>
+  <div id="list"></div>
+</main>
+<footer data-foot></footer>
+
+<script src="/assets/layout.js"></script>
+<script src="/assets/projects.js"></script>
+<script>
+setupFilter({
+  search: document.getElementById("q"),
+  tagsEl: document.getElementById("tags"),
+  activeEl: document.getElementById("active"),
+  label: "Filter by tag",
+  render(list, state) {
+    document.getElementById("count").textContent = `${list.length} of ${PROJECTS.length} projects`;
+    const tags = p => `<div class="ptags">${p.tags.map(t => `<button class="ptag ${state.tags.has(t) ? "on" : ""}" data-tag="${esc(t)}">${esc(t)}</button>`).join("")}</div>`;
+    document.getElementById("list").innerHTML = list.length ? list.map(p => p.image ? `
+      <section class="prow" data-href="${p.page}">
+        <img src="${p.image}" alt="${esc(p.name)} screenshot">
+        <div>
+          <h3><a href="${p.page}">${esc(p.name)}</a><span class="ver">v${p.version}</span></h3>
+          <div class="tagline">${esc(p.tagline)}</div>
+          <p>${esc(p.long)}</p>
+          <div class="install"><code>${esc(p.install)}</code><button data-copy="${esc(p.install)}">Copy</button></div>
+          ${tags(p)}
+          <div class="links"><a class="main" href="${p.page}">Docs &amp; install →</a><a href="${p.links.source}">Source</a>${p.links.pypi ? `<a href="${p.links.pypi}">PyPI</a>` : ""}</div>
+        </div>
+      </section>` : `
+      <section class="prow compact" data-href="${p.page}">
+        <div>
+          <h3><a href="${p.page}">${esc(p.name)}</a><span class="ver">archived · ${p.started.slice(0, 4)}</span></h3>
+          <p style="margin-top:4px">${esc(p.desc)}</p>
+          ${tags(p)}
+        </div>
+      </section>`).join("") : `<div class="empty">No projects match. <a href="#" data-clear>Clear search and filters</a></div>`;
+  },
+});
+
+// Whole row opens the project page, except clicks on links, buttons, the install
+// command, or while selecting text.
+document.addEventListener("click", e => {
+  const row = e.target.closest("[data-href]");
+  if (row && !e.target.closest("a, button, .install") && !getSelection().toString()) location.href = row.dataset.href;
+  const b = e.target.closest("[data-copy]");
+  if (b) navigator.clipboard?.writeText(b.dataset.copy).then(() => { b.textContent = "Copied"; setTimeout(() => (b.textContent = "Copy"), 1200); });
+});
+</script>
+</body>
+</html>

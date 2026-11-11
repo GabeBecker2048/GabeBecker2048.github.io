@@ -1,0 +1,150 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Gabe Becker · terminal</title>
+<link rel="icon" href="https://avatars.githubusercontent.com/u/78775796?v=4">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  /* dark (default) and a light "paper terminal" theme */
+  :root { --bg:#fbfaf7; --panel:#f1efe9; --fg:#2b2b2b; --dim:#77746c; --green:#3f7d20; --blue:#1f5fbf; --yellow:#8a5a00; --line:#dedad0; }
+  @media (prefers-color-scheme: dark) { :root { --bg:#16181d; --panel:#1d2026; --fg:#d7dae0; --dim:#858d9a; --green:#98c379; --blue:#61afef; --yellow:#e5c07b; --line:#2c3038; } }
+  * { box-sizing:border-box; }
+  body { margin:0; background:var(--bg); color:var(--fg); font:15px/1.7 "JetBrains Mono", ui-monospace, Menlo, Consolas, monospace; }
+  main { max-width:860px; margin:0 auto; padding:56px 20px 80px; }
+  a { color:var(--blue); text-decoration:none; } a:hover { text-decoration:underline; }
+  .p { color:var(--green); } .d { color:var(--dim); } .y { color:var(--yellow); }
+  h1 { font-size:1.7rem; margin:2px 0 0; }
+  .role { font-size:1.05rem; }
+  .links { margin-top:12px; display:flex; flex-wrap:wrap; gap:8px 18px; align-items:center; }
+  .cta { border:1px solid var(--blue); padding:2px 10px; border-radius:4px; }
+  .cmd { margin:44px 0 10px; }
+
+  /* search line, written as a command */
+  .searchline { display:flex; flex-wrap:wrap; align-items:center; gap:6px 8px; background:var(--panel); border:1px solid var(--line); border-radius:6px; padding:8px 12px; }
+  .searchline input { flex:1 1 180px; min-width:0; font:inherit; color:var(--fg); background:transparent; border:0; border-bottom:1px dashed var(--dim); padding:0 2px; }
+  .searchline input:focus { outline:none; border-bottom-color:var(--green); }
+  .searchline input::placeholder { color:var(--dim); }
+  .tagpick { position:relative; }
+  .tagpick summary { list-style:none; cursor:pointer; color:var(--yellow); }
+  .tagpick summary::-webkit-details-marker { display:none; }
+  .tagpick summary::before { content:"--tag="; color:var(--dim); }
+  .tagpick summary .tp-label::after { content:"[select ▾]"; }
+  .tagpick summary .tp-label { font-size:0; } .tagpick summary .tp-label::after { font-size:15px; }
+  .tp-menu { position:absolute; right:0; top:calc(100% + 6px); z-index:5; background:var(--panel); border:1px solid var(--line); border-radius:6px; padding:6px 4px; width:230px; max-height:320px; overflow:auto; box-shadow:0 8px 28px rgba(0,0,0,.3); }
+  .tp-menu label { display:flex; gap:8px; align-items:center; padding:1px 8px; cursor:pointer; }
+  .tp-menu label:hover { background:var(--bg); }
+  .tp-menu input { accent-color:var(--green); }
+  .tp-c { margin-left:auto; color:var(--dim); }
+  .active { display:flex; flex-wrap:wrap; gap:8px; margin-top:8px; }
+  .chip { font:inherit; font-size:.85rem; background:none; border:1px solid var(--yellow); color:var(--yellow); border-radius:3px; padding:0 6px; cursor:pointer; }
+  .chip.clear { border-color:transparent; color:var(--dim); }
+  .total { color:var(--dim); margin:12px 0 4px; }
+
+  .row { display:grid; grid-template-columns:230px 1fr; gap:2px 16px; padding:10px 0; border-bottom:1px dashed var(--line); }
+  .row .n a { color:var(--yellow); font-weight:700; }
+  .row .tags { font-size:.85rem; }
+  .row .tags button { white-space:nowrap; font:inherit; background:none; border:0; padding:0; margin-right:10px; color:var(--dim); cursor:pointer; }
+  .row .tags button:hover, .row .tags button.on { color:var(--green); }
+  .row .install { color:var(--dim); font-size:.88rem; }
+  .row .install::before { content:"$ "; color:var(--green); }
+  pre { margin:0; font:inherit; white-space:pre-wrap; }
+
+  /* optional interactive shell */
+  .shell { margin-top:8px; background:var(--panel); border:1px solid var(--line); border-radius:6px; padding:12px 14px; }
+  .shell .out { white-space:pre-wrap; }
+  .shell .inline { display:flex; gap:8px; }
+  .shell input { flex:1; min-width:0; font:inherit; color:var(--fg); background:transparent; border:0; outline:none; caret-color:var(--green); }
+  @media (max-width:640px) { .row { grid-template-columns:1fr; } }
+</style>
+</head>
+<body>
+<main>
+  <div class="d" style="display:flex;justify-content:space-between;gap:12px"><span>~/gabe $ whoami</span><a href="/">← regular site</a></div>
+  <h1>Gabe Becker</h1>
+  <div class="role">Backend Software Engineer · Python, APIs, databases, Docker, Linux</div>
+  <div class="links">
+    <a class="cta" href="#">resume.pdf ↓</a>
+    <a href="https://github.com/GabeBecker2048">github</a>
+    <a href="#">linkedin</a>
+    <a href="#">email</a>
+  </div>
+
+  <div class="cmd"><span class="p">~/gabe $</span> cat about.txt</div>
+  <div>[Plain sentences, not jokes: what you build, what kind of backend role you want, and where you're based. This is the part recruiters actually read.]</div>
+
+  <div class="cmd"><span class="p">~/gabe $</span> cat experience.txt</div>
+<pre><span class="y">20XX-now </span>  [Job title] @ [Company]
+           <span class="d">[One line on what you built and with what]</span>
+<span class="y">20XX-20XX</span>  [Job title] @ [Company]
+<span class="y">20XX-20XX</span>  [Degree], [School]</pre>
+
+  <div class="cmd"><span class="p">~/gabe $</span> ls projects/</div>
+  <div class="searchline">
+    <span class="d">| grep -i</span>
+    <input id="q" type="search" placeholder="type to search…" aria-label="Search projects" autocomplete="off">
+    <div id="tags"></div>
+  </div>
+  <div class="active" id="active"></div>
+  <div class="total" id="count"></div>
+  <div id="list"></div>
+
+  <div class="cmd"><span class="p">~/gabe $</span> ./shell <span class="d"># optional: try typing "help"</span></div>
+  <div class="shell" id="shell">
+    <div class="out" id="out"></div>
+    <div class="inline"><span class="p">~/gabe $</span><input id="cmd" aria-label="Shell command" autocomplete="off" spellcheck="false"></div>
+  </div>
+</main>
+<script src="/assets/projects.js"></script>
+<script>
+const f = setupFilter({
+  search: document.getElementById("q"),
+  tagsEl: document.getElementById("tags"),
+  activeEl: document.getElementById("active"),
+  label: "tag",
+  render(list, state) {
+    document.getElementById("count").textContent = `total ${list.length}`;
+    document.getElementById("list").innerHTML = list.length ? list.map(p => `
+      <div class="row">
+        <div class="n"><a href="${p.page}">${esc(p.name)}/</a><br><span class="d">${p.version ? "v" + p.version : "archived"} · ${p.updated.slice(0, 7)}</span></div>
+        <div>${esc(p.desc)}
+          ${p.install ? `<div class="install">${esc(p.install)}</div>` : ""}
+          <div class="tags">${p.tags.map(t => `<button data-tag="${esc(t)}" class="${state.tags.has(t) ? "on" : ""}">#${esc(t.toLowerCase())}</button>`).join("")}</div>
+        </div>
+      </div>`).join("") : `<div class="d" style="padding:10px 0">grep: no matches. <a href="#" data-clear>reset filters</a></div>`;
+  },
+});
+
+// A tiny shell. Everything it shows is also on the page, so nobody has to use it.
+const out = document.getElementById("out"), cmd = document.getElementById("cmd");
+const print = s => { out.textContent += s + "\n"; };
+const byName = n => PROJECTS.find(p => p.name === n.replace(/\/$/, ""));
+const files = { "about.txt": "[about text]", "experience.txt": "[experience text]" };
+const COMMANDS = {
+  help: () => print("commands: ls, cat <file>, open <project>, grep <text>, tag <name>, tags, resume, clear, exit"),
+  ls: () => print(PROJECTS.map(p => p.name + "/").join("  ") + "  about.txt  experience.txt"),
+  cat: a => print(files[a] || (byName(a || "") ? byName(a).desc : `cat: ${a}: No such file`)),
+  open: a => { const p = byName(a || ""); p ? (print(`opening ${p.page}`), location.href = p.page) : print(`open: ${a}: not found`); },
+  grep: a => { document.getElementById("q").value = a || ""; document.getElementById("q").dispatchEvent(new Event("input")); print(`filtered projects by "${a || ""}"`); },
+  tag: a => { const t = allTags().find(x => x.tag.toLowerCase() === (a || "").toLowerCase()); if (!t) return print(`tag: ${a}: unknown (try "tags")`); f.state.tags.add(t.tag); f.update(); print(`filtered projects by tag ${t.tag}`); },
+  tags: () => print(allTags().map(t => `${t.tag}(${t.count})`).join("  ")),
+  resume: () => print("resume.pdf: [link]"),
+  whoami: () => print("Gabe Becker, backend software engineer"),
+  clear: () => { out.textContent = ""; },
+  exit: () => { print("logout"); location.href = "/"; },
+};
+cmd.addEventListener("keydown", e => {
+  if (e.key !== "Enter") return;
+  const line = cmd.value.trim(); cmd.value = "";
+  print("~/gabe $ " + line);
+  if (!line) return;
+  const [c, ...rest] = line.split(/\s+/);
+  (COMMANDS[c] || (() => print(`${c}: command not found. Try "help".`)))(rest.join(" "));
+});
+document.getElementById("shell").addEventListener("click", () => cmd.focus());
+print('Type "help" to see the commands.');
+</script>
+</body>
+</html>

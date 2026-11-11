@@ -1,1 +1,120 @@
-Hello World!
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Gabe Becker · Backend Software Engineer</title>
+<meta name="description" content="Gabe Becker, backend software engineer. Projects, experience and résumé.">
+<link rel="icon" href="https://avatars.githubusercontent.com/u/78775796?v=4">
+<link rel="stylesheet" href="/assets/site.css">
+</head>
+<body>
+<div class="home">
+  <aside>
+    <img class="avatar" src="https://avatars.githubusercontent.com/u/78775796?v=4" alt="">
+    <h1>Gabe Becker</h1>
+    <p class="role">Backend Software Engineer</p>
+    <nav class="sidenav" id="nav">
+      <a href="#about">About</a>
+      <a href="#projects">Projects</a>
+      <a href="#experience">Experience</a>
+    </nav>
+    <div class="side-btns">
+      <a class="btn primary" href="#">Résumé PDF</a>
+      <button class="btn" onclick="print()" title="Print this page or save it as a PDF">Save page</button>
+    </div>
+    <div class="ext">
+      <a href="https://github.com/GabeBecker2048">GitHub</a><a href="#">LinkedIn</a><a href="#">Email</a>
+    </div>
+    <div class="side-h">Skills</div>
+    <div id="skills"></div>
+    <div class="hint">Green skills filter my projects.</div>
+  </aside>
+
+  <main>
+    <section id="about">
+      <h2>About</h2>
+      <p class="lead">[A few friendly sentences, longer than a résumé summary: what you like building, how you got into backend work, what you're looking for next.]</p>
+      <div class="now"><b>Currently:</b> [what you're working on or learning, e.g. "shipping anchorless 1.x"]</div>
+    </section>
+
+    <section id="projects">
+      <h2>Projects <a href="/projects/">Browse all with install guides →</a></h2>
+      <div class="toolbar">
+        <input id="q" type="search" placeholder="Search projects  ( / )" aria-label="Search projects">
+        <div id="tags"></div>
+      </div>
+      <div class="status"><span id="count"></span><span class="active" id="active"></span></div>
+      <div id="list"></div>
+    </section>
+
+    <section id="experience">
+      <h2>Experience</h2>
+      <div class="xp">
+        <div class="job">
+          <div class="head"><b>[Job title] · [Company]</b><span class="when">20XX – Present</span></div>
+          <p>[One or two sentences on the work: the systems, the scale, the stack. Bullet points stay in the PDF.]</p>
+        </div>
+        <div class="job">
+          <div class="head"><b>[Job title] · [Company]</b><span class="when">20XX – 20XX</span></div>
+          <p>[One sentence.]</p>
+        </div>
+        <div class="job">
+          <div class="head"><b>[Degree] · [School]</b><span class="when">20XX – 20XX</span></div>
+        </div>
+      </div>
+      <p class="note">The full history is in my <a href="#">résumé (PDF)</a>.</p>
+    </section>
+
+    <footer data-foot></footer>
+  </main>
+</div>
+
+<script src="/assets/layout.js"></script>
+<script src="/assets/projects.js"></script>
+<script>
+// Skills that are also project tags become filter buttons.
+const SKILLS = ["Python", "SQL", "REST", "FastAPI", "PostgreSQL", "SQLite", "WebSockets", "Docker", "Linux", "Self-hosted", "ffmpeg", "CLI", "Bash", "CI/CD"];
+const tagSet = new Set(allTags().map(t => t.tag));
+
+setupFilter({
+  search: document.getElementById("q"),
+  tagsEl: document.getElementById("tags"),
+  activeEl: document.getElementById("active"),
+  label: "Tags",
+  render(list, state) {
+    document.getElementById("skills").innerHTML = SKILLS.map(s => tagSet.has(s)
+      ? `<button class="skill ${state.tags.has(s) ? "on" : ""}" data-tag="${esc(s)}">${esc(s)}</button>`
+      : `<span class="skill">${esc(s)}</span>`).join("");
+
+    document.getElementById("count").textContent = `${list.length} of ${PROJECTS.length} projects`;
+    document.getElementById("list").innerHTML = list.length ? list.map(p => `
+      <article class="item ${p.image ? "" : "noimg"}">
+        <div>
+          <h3><a href="${p.page}">${esc(p.name)}</a><small>${p.version ? "v" + p.version : "archived"} · ${p.started.slice(0, 4)}${p.status === "active" ? "–now" : ""}</small></h3>
+          <p>${esc(p.desc)}</p>
+          <div class="ptags">${p.tags.map(t => `<button class="ptag ${state.tags.has(t) ? "on" : ""}" data-tag="${esc(t)}">${esc(t)}</button>`).join("")}</div>
+          <div class="links"><a href="${p.page}">Project page →</a><a href="${p.links.source}">Source</a>${p.links.pypi ? `<a href="${p.links.pypi}">PyPI</a>` : ""}</div>
+        </div>
+        ${p.image ? `<a href="${p.page}" tabindex="-1"><img class="thumb" src="${p.image}" alt=""></a>` : ""}
+      </article>`).join("") : `<div class="empty">No projects match. <a href="#" data-clear>Clear filters</a></div>`;
+  },
+});
+
+document.getElementById("skills").addEventListener("click", e => {
+  if (e.target.closest("button.skill")) setTimeout(() => document.getElementById("projects").scrollIntoView(), 0);
+});
+
+// Highlight the section being read.
+const links = [...document.querySelectorAll("#nav a")];
+const sections = [...document.querySelectorAll("main section")];
+function markNav() {
+  const atBottom = innerHeight + scrollY >= document.body.scrollHeight - 2;
+  const cur = atBottom ? sections.at(-1) : sections.filter(s => s.getBoundingClientRect().top < 140).at(-1) || sections[0];
+  links.forEach(a => a.classList.toggle("on", a.hash === "#" + cur.id));
+}
+addEventListener("scroll", markNav, { passive: true });
+markNav();
+</script>
+</body>
+</html>
