@@ -38,10 +38,16 @@ the experience entries into `experience.csv` and shows them as a DuckDB query.
 ## Add a project
 
 1. Add an entry to `PROJECTS` in `assets/projects.js` (copy an existing one).
-   `featured: true` puts it on the home page. Leave `links.source` out and set
-   `private: true` for a private repo. `version` and `updated` are fallbacks:
-   pages replace them with the live PyPI version (if `links.pypi` is set) and
-   the GitHub last-push date (if `links.source` is set).
+   The list order is the "Recommended" sort, and the first four entries are
+   the ones on the home page. `long` is a list of paragraphs: the first is the
+   summary on `/projects/`, and the project's page shows all of them. `started`
+   is when work began (`YYYY`, `YYYY-MM` or `YYYY-MM-DD`) and drives the
+   Newest/Oldest sorts. `status` is `active`, `wip` or `archived`. Leave
+   `links.source` out and set `private: true` for a private repo. Set
+   `links.docs` when the project has its own docs site; without it a public
+   project links to its README. `version` and `updated` are fallbacks: pages
+   replace them with the live PyPI version (if `links.pypi` is set) and the
+   GitHub last-push date (if `links.source` is set).
 2. Copy any folder in `projects/` to `projects/<slug>/` and change the title,
    description and URLs in its `<head>`. The page content comes from the data.
 3. Add `https://gabebecker.com/projects/<slug>/` to `sitemap.xml`.

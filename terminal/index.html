@@ -184,7 +184,7 @@ const IDENTICON = [".###.", ".#.#.", "..#..", ".....", ".#.#."]; // GabeBecker20
 async function neofetch() {
   let h; try { h = await readHome(); } catch { h = { role: "Data Engineer", skills: [] }; }
   const art = IDENTICON.join("").split("").map(c => `<span class="${c === "#" ? "on" : ""}"></span>`).join("");
-  const active = PROJECTS.filter(p => p.status === "active").length;
+  const active = PROJECTS.filter(p => p.status !== "archived").length;
   const row = (k, v) => `<div><span class="k">${k}</span>: ${v}</div>`;
   return `<div class="neo"><div class="art" aria-hidden="true">${art}</div><div>
     <div class="title"><span class="g">gabe</span>@<span class="g">gabebecker.com</span></div>

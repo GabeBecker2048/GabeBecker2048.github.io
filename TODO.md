@@ -85,13 +85,14 @@ These appear in **two places**; edit both:
 
 ### ☐ Project descriptions, tags and order
 - **File:** `assets/projects.js`, the `PROJECTS` list.
-- **Check each entry:** `tagline`, `desc` (short, used on cards), `long` (used
-  on the project's own page), `features`, and `tags`.
+- **Check each entry:** `tagline`, `desc` (short, used on the home page), `long` (paragraphs:
+  the first is the summary on `/projects/`, all of them show on the project's
+  own page), `features`, and `tags`.
 - **homelab** is written by me from the homelab repo, without IPs, hostnames
   or the torrent pipeline. Make sure you're happy with what it says publicly.
 - **Order = the "Recommended" sort.** Move entries up/down to change it.
-- **`featured: true`** puts a project on the home page (currently anchorless,
-  chesssnake, whirligig). Three is a good number.
+- **The first four entries** are the ones on the home page (`FEATURED_COUNT`
+  at the top of the file).
 
 ### ☐ Page descriptions for link previews and search engines
 - Each page's `<meta name="description">` and `og:description` in its

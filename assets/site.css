@@ -78,6 +78,9 @@ main.wrap { flex:1; padding-top:40px; padding-bottom:24px; }
 .ptag:hover, .ptag.on { color:var(--accent); border-color:var(--accent); text-decoration:none; }
 .ptag.on { background:var(--accent-soft); }
 .ver { font:400 .8rem "Source Sans 3", sans-serif; color:var(--muted); border:1px solid var(--line); border-radius:99px; padding:0 9px; white-space:nowrap; }
+.ver.wip { color:var(--accent); border-color:var(--accent); background:var(--accent-soft); }
+.since { font:400 .8rem "Source Sans 3", sans-serif; color:var(--muted); white-space:nowrap; }
+.overview { max-width:68ch; } .overview p { margin:0 0 14px; }
 
 /* the one project row (home = compact, /projects/ = full) */
 .prow { display:grid; grid-template-columns:300px 1fr; gap:28px; padding:22px 16px; margin:0 -16px; border-bottom:1px solid var(--line); border-radius:8px; cursor:pointer; transition:background .12s; }

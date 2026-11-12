@@ -1,47 +1,66 @@
 // Project data + search/filter + the shared project row. Used by every page.
 //
 // The order of this list is the "Recommended" sort (the default on /projects/):
-// move entries up or down to change it.
+// move entries up or down to change it. The home page shows the first
+// FEATURED_COUNT entries.
+//
+// Fields worth knowing:
+//   desc     one or two sentences, for the home page and the terminal
+//   long     the overview: a list of paragraphs. The first one must stand on
+//            its own (it is the summary on /projects/); the project's own page
+//            shows all of them.
+//   status   "active", "wip" (not released yet) or "archived"
+//   started  when work began: "YYYY", "YYYY-MM" or "YYYY-MM-DD", as precise as
+//            is known. This is not always the repo's first commit (a prototype
+//            may have lived elsewhere). Drives the "Newest/Oldest first" sorts.
+//   links.docs   the project's own docs site, when it has one. Without it,
+//                public projects get a "Docs in the repo" link to the README.
 //
 // To add a project: add an entry below, copy any folder in /projects/ to
 // /projects/<slug>/ (the stub reads the slug from the URL), and add the URL to
 // /sitemap.xml.
 
+const FEATURED_COUNT = 4;
+
 const PROJECTS = [
   {
-    slug: "anchorless",
-    name: "anchorless",
-    featured: true,
-    tagline: "News without the anchor.",
-    desc: "A 24/7 text news TV channel for Jellyfin, Plex and IPTV: headlines from public RSS feeds on a pixel-art news set.",
-    long: "Turns RSS headlines into a 24/7 TV channel you can add to Jellyfin, Plex, Channels DVR or any IPTV player: an empty pixel-art news set with a headline crawl, background music and breaking-news alerts.",
-    features: [
-      "Pulls headlines from public RSS feeds and groups the same story across outlets.",
-      "Breaking news interrupts the rundown when many outlets pick a story up at once.",
-      "Two looks: the pixel-art Studio, or Classic cable-news pages.",
-      "Lightweight: Python draws the frames, ffmpeg encodes them, nothing runs while nobody watches.",
+    slug: "murmur",
+    name: "Murmur",
+    private: true,
+    tagline: "Does news predict prices, follow them, or move with them?",
+    desc: "A daily pipeline that scores news-headline sentiment for the 100 largest US companies, stores it next to their stock prices, and tests whether news leads, lags or moves with returns.",
+    long: [
+      "Murmur is a daily data pipeline built to answer one question: does news predict stock prices, follow them, or move with them? Every evening it collects headlines for the 100 largest US companies, scores the sentiment of each one with FinBERT, stores the scores next to that day's prices, and correlates the two.",
+      "Each trading day is split into an overnight and an intraday news window, and each window is compared with the overnight, intraday and daily return one day back, on the same day, and one day ahead. A shuffle test checks whether a result depends on matching each company to its own news, or would appear from market-wide moves alone. The store is SQLite and every write is an upsert, so any day can be rerun safely. The results are published as Parquet datasets behind a REST API and a dashboard.",
+      "It began in 2023 as a small project with two collaborators that compared headline sentiment with stock prices, and was rebuilt in 2026 as a pipeline that runs every day on my home server. It is still a work in progress: the source will be public once the remaining work is done and the original contributors have agreed.",
     ],
-    version: "1.0.2",
-    status: "active",
-    started: "2026-11",
-    updated: "2026-11-07",
-    tags: ["Python", "Docker", "ffmpeg", "RSS", "Self-hosted", "Media"],
-    install: "pip install anchorless",
-    image: "https://raw.githubusercontent.com/GabeBecker2048/anchorless/main/docs/studio.gif",
-    links: {
-      source: "https://github.com/GabeBecker2048/anchorless",
-      pypi: "https://pypi.org/project/anchorless/",
-      docker: "https://github.com/GabeBecker2048/anchorless/pkgs/container/anchorless",
-      issues: "https://github.com/GabeBecker2048/anchorless/issues",
-    },
+    features: [
+      "Its own index: the 100 largest US companies by market cap, rebuilt every month, with membership recorded per day so any past day can be reconstructed.",
+      "Headlines from Yahoo, Finnhub and GDELT, stored once when several sources carry the same story. Prices from yfinance or Polygon.",
+      "Sentiment scored with FinBERT on a CPU.",
+      "Correlations at lags of -1, 0 and +1 days, per news source and pooled, daily and over rolling horizons.",
+      "One Docker image in three roles: the API and dashboard, a scheduler, and a single worker with a job queue. Failed runs are retried, and a restart never loses a day.",
+      "Published datasets in Parquet, with a manifest and a data dictionary.",
+    ],
+    version: "0.8.2",
+    status: "wip",
+    started: "2023-11-25",
+    updated: "2026-11-08",
+    tags: ["Python", "Data pipeline", "Finance", "Machine learning", "SQLite", "Parquet", "FastAPI", "REST", "Docker"],
+    install: null,
+    image: null,
+    links: {},
   },
   {
     slug: "chesssnake",
     name: "chesssnake",
-    featured: true,
     tagline: "Play, render and persist chess games in Python.",
     desc: "A pure-Python chess engine, board renderer and REST game server backed by SQLite or PostgreSQL, with a web UI.",
-    long: "A chess engine, a board renderer and a game server in one package. The server owns the rules, so a client cannot cheat and a frontend in any language needs no chess logic of its own.",
+    long: [
+      "chesssnake is a chess engine, a board renderer and a game server in one Python package. You can play a game in a few lines of Python, draw any position as an image, or run the server and let many clients share games through a REST API.",
+      "The server owns the rules, so a client cannot cheat and a frontend in any language needs no chess logic of its own. Games are kept in SQLite or PostgreSQL, clients can follow a game live over a websocket instead of polling, and the server comes with a web UI for playing, watching games in progress and managing accounts.",
+      "It started as a prototype in early 2024 and has been on PyPI since December 2024. A live instance runs on my homelab.",
+    ],
     features: [
       "Full rules: castling, en passant, promotion, and every draw condition.",
       "Board images from any position as PIL images.",
@@ -51,25 +70,90 @@ const PROJECTS = [
     ],
     version: "0.14.4",
     status: "active",
-    started: "2024-11",
+    started: "2024-02-03",
     updated: "2026-11-05",
     tags: ["Python", "REST", "FastAPI", "PostgreSQL", "SQLite", "WebSockets", "Docker", "Games"],
     install: "pip install chesssnake",
     image: "https://raw.githubusercontent.com/GabeBecker2048/chesssnake/main/docs/web-ui.png",
     links: {
       source: "https://github.com/GabeBecker2048/chesssnake",
+      docs: "https://gabebecker.com/chesssnake/",
       pypi: "https://pypi.org/project/chesssnake/",
       docker: "https://github.com/GabeBecker2048/chesssnake/pkgs/container/chesssnake",
       issues: "https://github.com/GabeBecker2048/chesssnake/issues",
     },
   },
   {
+    slug: "how-much-music",
+    name: "how-much-music",
+    tagline: "How many possible measures of music are there?",
+    desc: "An exact count of every possible measure of 4/4 music on a piano: about 2.08 × 10³⁵ ways to write one. A paper, an interactive calculator and a Python tool.",
+    long: [
+      "How many different measures of music can exist? This project counts them exactly. For one measure of 4/4 on the 88 keys of a piano, with note values from sixteenth notes to whole notes, there are about 2.08 × 10³⁵ ways to write it and about 4.09 × 10³¹ ways it can sound.",
+      "I first asked the question in high school, in 2018, and got halfway: I could count the measures that one set of notes produces, but had no way to list every set of notes that fills a measure. Years later I came back to it and saw that the list was never needed. Counting one note at a time gives a short recurrence that a computer evaluates instantly.",
+      "The result is written up like a math paper, with an addendum that adds triplets, a calculator for any pitch range, time signature and set of note values, and the story of how the problem was solved. All of the arithmetic uses exact integers, so nothing is rounded.",
+    ],
+    features: [
+      "The paper: the derivation, from the high-school formula to the recurrence f(t) = p · Σ f(t − d).",
+      "The addendum: the same count with triplets, where the sounding count needs a small finite automaton.",
+      "The calculator: any pitch range, time signature and set of note values, computed in the browser with exact integers.",
+      "A Python command-line tool with no dependencies, and tests.",
+    ],
+    version: null,
+    status: "active",
+    started: "2018",
+    updated: "2026-11-12",
+    tags: ["Math", "Music", "Python", "JavaScript"],
+    install: null,
+    image: null,
+    links: {
+      source: "https://github.com/GabeBecker2048/how-much-music",
+      docs: "https://gabebecker.com/how-much-music/",
+      docsLabel: "Paper and calculator",
+      issues: "https://github.com/GabeBecker2048/how-much-music/issues",
+    },
+  },
+  {
+    slug: "anchorless",
+    name: "anchorless",
+    tagline: "News without the anchor.",
+    desc: "A 24/7 text news TV channel for Jellyfin, Plex and IPTV: headlines from public RSS feeds on a pixel-art news set.",
+    long: [
+      "Anchorless turns news headlines into a 24/7 TV channel that you can add to Jellyfin, Plex, Channels DVR or any IPTV player. The picture is an empty pixel-art news set: the news plays on the big screen behind a desk nobody sits at, with a headline crawl, background music and breaking-news alerts.",
+      "It reads public RSS feeds, groups the same story across outlets, and builds a rundown of top stories, local, national, world and business news. When many outlets pick a story up at once, it interrupts the rundown as breaking news. There is no browser involved: Python draws the frames, ffmpeg encodes them, and nothing runs while nobody is watching.",
+      "I built it for my own Jellyfin server, where it runs as live TV channels.",
+    ],
+    features: [
+      "Pulls headlines from public RSS feeds and groups the same story across outlets.",
+      "Breaking news interrupts the rundown when many outlets pick a story up at once.",
+      "Two looks: the pixel-art Studio, or Classic cable-news pages.",
+      "Lightweight: Python draws the frames, ffmpeg encodes them, nothing runs while nobody watches.",
+    ],
+    version: "1.0.2",
+    status: "active",
+    started: "2026-11-01",
+    updated: "2026-11-07",
+    tags: ["Python", "Docker", "ffmpeg", "RSS", "Self-hosted", "Media"],
+    install: "pip install anchorless",
+    image: "https://raw.githubusercontent.com/GabeBecker2048/anchorless/main/docs/studio.gif",
+    links: {
+      source: "https://github.com/GabeBecker2048/anchorless",
+      docs: "https://gabebecker.com/anchorless/",
+      pypi: "https://pypi.org/project/anchorless/",
+      docker: "https://github.com/GabeBecker2048/anchorless/pkgs/container/anchorless",
+      issues: "https://github.com/GabeBecker2048/anchorless/issues",
+    },
+  },
+  {
     slug: "whirligig",
     name: "whirligig",
-    featured: true,
     tagline: "Let the wheel decide.",
     desc: "Spin a colorful ASCII wheel of fortune in your terminal, from the CLI or Python. Zero dependencies.",
-    long: "Spins a colorful ASCII wheel of fortune in your terminal and lands on one of your choices. The animation plays on the terminal but stdout is only the chosen label, so it is safe to use in scripts.",
+    long: [
+      "whirligig spins a colorful ASCII wheel of fortune in your terminal and lands on one of your choices: what's for lunch, who reviews the pull request, heads or tails. It is a command-line tool and a one-function Python library.",
+      "The spin is a real animation: the arm sweeps the wheel, slows down and holds on the winner. It plays on the terminal while standard output carries only the chosen label, so it is safe to use in scripts. Odds can be weighted by repeating a label, labels can come from a file or a pipe, and there are ready-made wheels for a coin, dice, a clock and the alphabet.",
+      "It began as a prototype in July 2024 and was released on PyPI in 2026. It has no dependencies and runs on Linux, macOS and Windows.",
+    ],
     features: [
       "A proper spin: the arm sweeps, slows down and holds on the winner.",
       "Scripting-safe: LUNCH=$(whirligig ...) just works.",
@@ -78,7 +162,7 @@ const PROJECTS = [
     ],
     version: "1.0.0",
     status: "active",
-    started: "2026-07",
+    started: "2024-07-25",
     updated: "2026-11-05",
     tags: ["Python", "CLI", "Library", "Terminal"],
     install: "uvx whirligig Pizza Sushi Tacos",
@@ -95,18 +179,22 @@ const PROJECTS = [
     private: true,
     tagline: "Two small machines that run my self-hosted services.",
     desc: "My self-hosted setup: a Docker host and a Raspberry Pi running media, photos, a game server and my own projects, with monitoring, alerts and version-controlled configs.",
-    long: "A Docker host that runs every service as its own Compose stack, and a Raspberry Pi that handles DNS, DHCP and HTTPS for the network. Monitoring tells me when something breaks, and every config lives in one git repo.",
+    long: [
+      "My homelab is two small machines that run the services I use every day: a Docker host for the workloads, and a Raspberry Pi that is the front door, handling DNS, DHCP and HTTPS for the network.",
+      "Every service is its own Docker Compose stack: Jellyfin for media, Immich for photos, a Minecraft network, and live instances of my own projects, including Murmur's daily job, the anchorless news channels and a chesssnake server. Prometheus and Alertmanager watch all of it and send push notifications to my phone through a self-hosted ntfy server. Nightly jobs update the container images and roll back when a service fails to come back up.",
+      "The configuration is the real project. Both machines collect their configs every night and commit them to one git repository, with a guard that refuses to commit secrets, next to a wiki that records how everything works and why. The repository is private because it describes my own network.",
+    ],
     features: [
       "Every service is its own Docker Compose stack with a README and an example env file. No secrets in git.",
       "A Raspberry Pi runs Pi-hole for DNS and DHCP, and Caddy as the HTTPS entry point, with fail2ban blocking abusive clients.",
       "Prometheus and Alertmanager watch the services and send push notifications through a self-hosted ntfy server.",
-      "Hosts Jellyfin, Immich, a Minecraft server, and live instances of anchorless and chesssnake.",
+      "Hosts Jellyfin, Immich, a Minecraft server, and live instances of Murmur, anchorless and chesssnake.",
       "Configs are collected from both machines every night and committed, so drift shows up in git status and a rebuild starts from a known state.",
     ],
     version: null,
     status: "active",
-    started: "2026-08",
-    updated: "2026-11-07",
+    started: "2026-06-17",
+    updated: "2026-11-08",
     tags: ["Docker", "Linux", "Self-hosted", "Monitoring", "Networking", "Automation", "Media"],
     install: null,
     image: null,
@@ -117,11 +205,18 @@ const PROJECTS = [
     name: "tetris-ai-demo",
     tagline: "An AI that plays Tetris.",
     desc: "An AI that plays Tetris, scoring candidate placements with board heuristics. Built with pygame and numpy.",
-    long: "For each falling piece it tries every possible placement and picks the one that leaves the best board, judged by a few simple heuristics.",
-    features: ["Tries every rotation and position of the current piece.", "Scores each board by holes, aggregate height, bumpiness and max height.", "Rendered live with pygame."],
+    long: [
+      "A Tetris game written with pygame, and an AI that plays it. For each falling piece the AI tries every rotation and position, and picks the placement that leaves the best board.",
+      "A board is judged by four simple measures: how many holes it has, the total height of its columns, how uneven the surface is, and how tall the tallest column is. Each one is turned into a score and the four are combined with fixed weights. There is no search ahead and no learning, which makes it a clear example of how far a handful of heuristics can go. The repository includes a slide deck that explains the approach.",
+    ],
+    features: [
+      "Tries every rotation and position of the current piece.",
+      "Scores each board by holes, aggregate height, bumpiness and max height.",
+      "Rendered live with pygame.",
+    ],
     version: null,
     status: "archived",
-    started: "2023-02",
+    started: "2023-02-08",
     updated: "2023-02-08",
     tags: ["Python", "AI", "Math", "numpy", "Games"],
     install: null,
@@ -133,11 +228,19 @@ const PROJECTS = [
     name: "mc-server-smartstart",
     tagline: "Start and back up a Minecraft server.",
     desc: "A Windows batch script that automatically starts and backs up a Minecraft server. Works with vanilla, Bukkit or Forge.",
-    long: "A simple Windows batch script that keeps a server running and backed up. Works with any server: vanilla, Bukkit or Forge.",
-    features: ["Automatic restarts.", "Automatic backups."],
+    long: [
+      "A set of Windows batch scripts that start a Minecraft server and back up its world automatically: on startup, on shutdown, or both. It needs no plugins, so it works with any server, whether vanilla, Bukkit or Forge.",
+      "The settings live in one file: how much memory the server gets, which jar to run, when to back up, and how many backups to keep before the oldest is deleted. To start the server you double-click start.bat. Written in 2022, for Windows only.",
+    ],
+    features: [
+      "Backs up the world on startup, on shutdown, or both.",
+      "Keeps a set number of backups and deletes the oldest.",
+      "One backup per day or several, numbered.",
+      "No plugins: works with vanilla, Bukkit and Forge servers.",
+    ],
     version: null,
     status: "archived",
-    started: "2022-10",
+    started: "2022-10-07",
     updated: "2022-10-11",
     tags: ["Batch", "Windows", "Automation", "Games"],
     install: null,
@@ -189,8 +292,18 @@ function loadLive() {
 const SORTS = {
   recommended: () => 0,
   az: (a, b) => a.name.localeCompare(b.name),
-  maintained: (a, b) => (a.status === "active" ? 0 : 1) - (b.status === "active" ? 0 : 1),
+  maintained: (a, b) => (a.status === "archived" ? 1 : 0) - (b.status === "archived" ? 1 : 0),
+  newest: (a, b) => b.started.localeCompare(a.started),
+  oldest: (a, b) => a.started.localeCompare(b.started),
 };
+
+// Small shared labels, used by the rows and the project pages.
+const STATUS_TEXT = { active: "Maintained", wip: "Work in progress, not released yet", archived: "Archived" };
+const pillText = p => (p.status === "wip" ? "WIP" + (p.version ? ` · v${p.version}` : "") : p.version ? `v${p.version}` : p.status === "archived" ? "archived" : "ongoing");
+const startedYear = p => p.started.slice(0, 4);
+// Where a project's docs are: its own site, or else the README of a public repo.
+const docsLink = p => (p.links.docs ? { href: p.links.docs, label: p.links.docsLabel || "Docs" }
+  : p.links.source ? { href: p.links.source + "#readme", label: "Docs in the repo" } : null);
 
 function allTags() {
   const counts = {};
@@ -279,9 +392,10 @@ function projectRow(p, { compact = false, state = null } = {}) {
   const tag = t => state
     ? `<button class="ptag ${state.tags.has(t) ? "on" : ""}" data-tag="${esc(t)}">${esc(t)}</button>`
     : `<a class="ptag" href="/projects/?tag=${encodeURIComponent(t)}">${esc(t)}</a>`;
-  const pill = p.version ? `v${p.version}` : p.status === "archived" ? `archived · ${p.started.slice(0, 4)}` : "ongoing";
+  const docs = docsLink(p);
   const links = [
-    `<a class="main" href="${p.page}">${p.install ? "Docs &amp; install" : "Details"} →</a>`,
+    `<a class="main" href="${p.page}">${p.install ? "Overview &amp; install" : "Overview"} →</a>`,
+    docs ? `<a href="${docs.href}">${esc(docs.label)}</a>` : "",
     p.links.source ? `<a href="${p.links.source}">Source</a>` : "",
     p.links.pypi ? `<a href="${p.links.pypi}">PyPI</a>` : "",
   ].join("");
@@ -289,9 +403,9 @@ function projectRow(p, { compact = false, state = null } = {}) {
     <article class="prow ${compact ? "compact" : ""} ${p.image ? "" : "noimg"}" data-href="${p.page}">
       ${p.image ? `<img src="${p.image}" alt="${esc(p.name)} screenshot">` : ""}
       <div>
-        <h3><a href="${p.page}">${esc(p.name)}</a><span class="ver">${pill}</span></h3>
+        <h3><a href="${p.page}">${esc(p.name)}</a><span class="ver${p.status === "wip" ? " wip" : ""}">${pillText(p)}</span><span class="since">started ${startedYear(p)}</span></h3>
         <div class="tagline">${esc(p.tagline)}</div>
-        <p>${esc(compact ? p.desc : p.long)}</p>
+        <p>${esc(compact ? p.desc : p.long[0])}</p>
         ${!compact && p.install ? `<div class="install"><code>${esc(p.install)}</code><button data-copy="${esc(p.install)}">Copy</button></div>` : ""}
         <div class="ptags">${p.tags.map(tag).join("")}</div>
         <div class="links">${links}</div>

@@ -34,7 +34,7 @@
       <a class="skill" href="/projects/?tag=Python">Python</a>
       <span class="skill">SQL</span>
       <span class="skill">Airflow</span>
-      <span class="skill">Parquet</span>
+      <a class="skill" href="/projects/?tag=Parquet">Parquet</a>
       <a class="skill" href="/projects/?tag=PostgreSQL">PostgreSQL</a>
       <a class="skill" href="/projects/?tag=Docker">Docker</a>
       <span class="skill">AWS</span>
@@ -98,7 +98,7 @@
 <script src="/assets/layout.js"></script>
 <script src="/assets/projects.js"></script>
 <script>
-const drawFeatured = () => (document.getElementById("featured").innerHTML = PROJECTS.filter(p => p.featured).map(p => projectRow(p, { compact: true })).join(""));
+const drawFeatured = () => (document.getElementById("featured").innerHTML = PROJECTS.slice(0, FEATURED_COUNT).map(p => projectRow(p, { compact: true })).join(""));
 drawFeatured();
 loadLive().then(changed => changed && drawFeatured()); // live versions from PyPI/GitHub
 document.getElementById("all-link").textContent = `See all ${PROJECTS.length} projects →`;
