@@ -16,6 +16,9 @@
 //   updated  the last change, "YYYY-MM-DD". Public repos get the live date from
 //            GitHub. Use "continuous" for something that changes all the time
 //            and has no public repo (the homelab): no date is shown.
+//   image    a 16:10 picture; the lists crop to that shape from the top.
+//            Pictures for private repos live in /assets/img/ (the .svg files
+//            there are the sources of the .png files). imageAlt describes it.
 //   links.docs   the project's own docs site, when it has one. Without it,
 //                public projects get a "Docs in the repo" link to the README.
 //
@@ -51,7 +54,8 @@ const PROJECTS = [
     updated: "2026-11-08",
     tags: ["Python", "Data pipeline", "Finance", "Machine learning", "SQLite", "Parquet", "FastAPI", "REST", "Docker"],
     install: null,
-    image: null,
+    image: "/assets/img/murmur.png",
+    imageAlt: "Chart: correlation between news sentiment and stock returns one session back, in the same session, and one session ahead",
     links: {},
   },
   {
@@ -108,7 +112,8 @@ const PROJECTS = [
     updated: "2026-11-12",
     tags: ["Math", "Music", "Python", "JavaScript"],
     install: null,
-    image: null,
+    image: "/assets/img/how-much-music.png",
+    imageAlt: "The recurrence that counts the measures, and the 36-digit answer",
     links: {
       source: "https://github.com/GabeBecker2048/how-much-music",
       docs: "https://gabebecker.com/how-much-music/",
@@ -200,7 +205,8 @@ const PROJECTS = [
     updated: "continuous",
     tags: ["Docker", "Linux", "Self-hosted", "Monitoring", "Networking", "Automation", "Media"],
     install: null,
-    image: null,
+    image: "/assets/img/homelab.png",
+    imageAlt: "Diagram: a Raspberry Pi in front of a Docker host, with both machines' configs committed to one git repository",
     links: {},
   },
   {
@@ -405,7 +411,7 @@ function projectRow(p, { compact = false, state = null } = {}) {
   ].join("");
   return `
     <article class="prow ${compact ? "compact" : ""} ${p.image ? "" : "noimg"}" data-href="${p.page}">
-      ${p.image ? `<img src="${p.image}" alt="${esc(p.name)} screenshot">` : ""}
+      ${p.image ? `<img src="${p.image}" alt="${esc(p.imageAlt || p.name + " screenshot")}">` : ""}
       <div>
         <h3><a href="${p.page}">${esc(p.name)}</a><span class="ver${p.status === "wip" ? " wip" : ""}">${pillText(p)}</span><span class="since">started ${startedYear(p)}</span></h3>
         <div class="tagline">${esc(p.tagline)}</div>

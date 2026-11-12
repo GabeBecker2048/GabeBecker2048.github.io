@@ -38,7 +38,7 @@
         <div><b>Started</b>${p.started}</div>
         <div><b>Updated</b>${updatedText(p)}</div>
       </div>
-      ${p.image ? `<img class="shot" src="${p.image}" alt="${esc(p.name)} screenshot">` : ""}
+      ${p.image ? `<img class="shot" src="${p.image}" alt="${esc(p.imageAlt || p.name + " screenshot")}">` : ""}
       <h2 id="overview">Overview</h2>
       <div class="overview">${p.long.map(t => `<p>${esc(t)}</p>`).join("")}</div>
       ${p.install ? `<h2 id="install">Install</h2><pre>${esc(p.install)}</pre><p class="muted">Full instructions are in the <a href="${docs.href}">${p.links.docs ? "docs" : "README"}</a>.</p>` : ""}
