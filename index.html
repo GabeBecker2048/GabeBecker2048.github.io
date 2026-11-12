@@ -3,11 +3,11 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Gabe Becker · Backend Software Engineer</title>
-<meta name="description" content="Gabe Becker, backend software engineer. Open-source Python projects, experience and résumé.">
+<title>Gabe Becker · Data Engineer</title>
+<meta name="description" content="Gabe Becker, data engineer. Open-source Python projects, experience and résumé.">
 <link rel="canonical" href="https://gabebecker.com/">
 <meta property="og:type" content="website">
-<meta property="og:title" content="Gabe Becker · Backend Software Engineer">
+<meta property="og:title" content="Gabe Becker · Data Engineer">
 <meta property="og:description" content="Open-source Python projects, experience and résumé.">
 <meta property="og:url" content="https://gabebecker.com/">
 <meta property="og:image" content="https://avatars.githubusercontent.com/u/78775796?v=4">
@@ -22,7 +22,7 @@
   <aside class="profile">
     <img class="avatar" src="https://avatars.githubusercontent.com/u/78775796?v=4" alt="">
     <h1>Gabe Becker</h1>
-    <p class="role">Backend Software Engineer</p>
+    <p class="role">Data Engineer</p>
     <a class="btn primary" href="/resume.pdf">Résumé (PDF)</a>
     <button class="printlink" onclick="print()">Print this page</button>
     <div class="ext">
@@ -53,7 +53,7 @@
   <div>
     <section id="about">
       <h2 class="section-h">About</h2>
-      <p class="lead">[A few friendly sentences, longer than a résumé summary: what you like building, how you got into backend work, what you're looking for next.]</p>
+      <p class="lead">[A few friendly sentences, longer than a résumé summary: what you like building, how you got into data engineering, what you're looking for next.]</p>
       <div class="now" id="now"><b>Currently:</b> [what you're working on or learning, e.g. "shipping anchorless 1.x"]</div>
     </section>
 
@@ -64,17 +64,19 @@
 
     <section id="experience">
       <h2 class="section-h">Experience</h2>
+      <!-- Each entry: job-title, org, start, end (YYYY-MM or YYYY; end can be "Present") and an optional <p>.
+           The terminal turns these into experience.csv, so keep the class names. -->
       <div class="xp">
         <div class="job">
-          <div class="head"><b>[Job title] · [Company]</b><span class="when">20XX – Present</span></div>
+          <div class="head"><b><span class="job-title">[Job title]</span> · <span class="org">[Company]</span></b><span class="when"><span class="start">20XX-XX</span> – <span class="end">Present</span></span></div>
           <p>[One or two sentences on the work: the systems, the scale, the stack. Bullet points stay in the PDF.]</p>
         </div>
         <div class="job">
-          <div class="head"><b>[Job title] · [Company]</b><span class="when">20XX – 20XX</span></div>
+          <div class="head"><b><span class="job-title">[Job title]</span> · <span class="org">[Company]</span></b><span class="when"><span class="start">20XX-XX</span> – <span class="end">20XX-XX</span></span></div>
           <p>[One sentence.]</p>
         </div>
         <div class="job">
-          <div class="head"><b>[Degree] · [School]</b><span class="when">20XX – 20XX</span></div>
+          <div class="head"><b><span class="job-title">[Degree]</span> · <span class="org">[School]</span></b><span class="when"><span class="start">20XX</span> – <span class="end">20XX</span></span></div>
         </div>
       </div>
       <p class="note">The full history is in my <a href="/resume.pdf">résumé (PDF)</a>.</p>

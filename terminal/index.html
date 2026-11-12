@@ -76,10 +76,8 @@
   .tp-menu input { accent-color:var(--green); }
   .tp-c { margin-left:auto; color:var(--dim); }
 
-  /* experience */
-  .xp { display:grid; grid-template-columns:auto 1fr; column-gap:3ch; row-gap:2px; }
-  .xp .when { color:var(--yellow); white-space:nowrap; }
-  .xp .what { max-width:90ch; }
+  /* experience: duckdb box table */
+  .duck { white-space:pre; overflow-x:auto; line-height:1.2; } /* box-drawing glyphs are 1.2em tall: taller lines leave gaps */
 
   /* live prompt */
   #live { position:relative; }
@@ -104,7 +102,6 @@
   @media (max-width:700px) {
     body { font-size:13.5px; } #term { padding-left:12px; padding-right:12px; }
     .ls { grid-template-columns:auto 1fr; } .ls .perm, .ls .own { display:none; } .ls .more { grid-column:1 / -1; }
-    .xp { grid-template-columns:1fr; } .xp .what { margin-bottom:8px; }
     #tmux .clock { display:none; }
   }
 </style>
@@ -121,7 +118,7 @@
     <div class="line"><span class="ps"></span> <span class="cmdtext"></span><span class="lsctl pending"><input id="q" type="search" placeholder="type to filter" aria-label="Filter projects" autocomplete="off" spellcheck="false"> <span id="tags"></span></span></div>
     <div class="o" id="o-ls"></div>
   </div>
-  <div class="blk pending" id="experience" data-win="2" data-cmd="cat experience.txt"><div class="line"><span class="ps"></span> <span class="cmdtext"></span></div><div class="o" id="o-xp"></div></div>
+  <div class="blk pending" id="experience" data-win="2" data-cmd="duckdb -c &quot;FROM 'experience.csv' ORDER BY start DESC&quot;"><div class="line"><span class="ps"></span> <span class="cmdtext"></span></div><div class="o" id="o-xp"></div></div>
   <div class="blk pending" id="ai" data-win="3" data-cmd="cat ai-stance.md"><div class="line"><span class="ps"></span> <span class="cmdtext"></span></div><div class="o" id="o-ai"></div></div>
 
   <div id="out"></div>
@@ -160,9 +157,11 @@ async function readHome() {
     about: norm(d.querySelector("#about .lead")?.textContent),
     now: norm(d.querySelector("#now")?.textContent),
     jobs: [...d.querySelectorAll("#experience .job")].map(j => ({
-      title: norm(j.querySelector(".head b")?.textContent),
-      when: norm(j.querySelector(".when")?.textContent),
-      text: norm(j.querySelector("p")?.textContent),
+      start: norm(j.querySelector(".start")?.textContent),
+      end: norm(j.querySelector(".end")?.textContent),
+      role: norm(j.querySelector(".job-title")?.textContent),
+      org: norm(j.querySelector(".org")?.textContent),
+      summary: norm(j.querySelector("p")?.textContent),
     })),
   };
 }
@@ -183,7 +182,7 @@ const failed = (file, href) => `<span class="r">cat: ${file}: could not read it.
 // ---------- renderers ----------
 const IDENTICON = [".###.", ".#.#.", "..#..", ".....", ".#.#."]; // GabeBecker2048's GitHub avatar
 async function neofetch() {
-  let h; try { h = await readHome(); } catch { h = { role: "Backend Software Engineer", skills: [] }; }
+  let h; try { h = await readHome(); } catch { h = { role: "Data Engineer", skills: [] }; }
   const art = IDENTICON.join("").split("").map(c => `<span class="${c === "#" ? "on" : ""}"></span>`).join("");
   const active = PROJECTS.filter(p => p.status === "active").length;
   const row = (k, v) => `<div><span class="k">${k}</span>: ${v}</div>`;
@@ -205,12 +204,41 @@ async function aboutTxt() {
   try { const h = await readHome(); return `<div class="txt">${esc(h.about)}\n\n<span class="y">${esc(h.now.split(":")[0])}:</span>${esc(h.now.slice(h.now.indexOf(":") + 1))}</div>`; }
   catch { return failed("about.txt", "/#about"); }
 }
-async function experienceTxt() {
+// experience.csv is built from the Experience section of the home page.
+const XP_COLS = ["start", "end", "role", "org", "summary"];
+const XP_QUERY = `duckdb -c "FROM 'experience.csv' ORDER BY start DESC"`;
+const csvCell = v => (/[",\n]/.test(v) ? `"${v.replace(/"/g, '""')}"` : v);
+async function experienceCsv() {
   try {
     const h = await readHome();
-    return `<div class="xp">${h.jobs.map(j => `<div class="when">${esc(j.when)}</div><div class="what">${esc(j.title)}${j.text ? `\n<span class="dim">${esc(j.text)}</span>` : ""}</div>`).join("")}</div>
-      <div class="dim" style="margin-top:6px">full history: <a href="${RESUME}">resume.pdf</a></div>`;
-  } catch { return failed("experience.txt", "/#experience"); }
+    return `<div class="txt">${esc([XP_COLS.join(","), ...h.jobs.map(j => XP_COLS.map(c => csvCell(j[c] || "")).join(","))].join("\n"))}</div>`;
+  } catch { return failed("experience.csv", "/#experience"); }
+}
+// Draws rows the way the DuckDB CLI does (duckbox): names, types, then values.
+function duckbox(rows, cols, maxW = 44) {
+  const cut = v => (v.length > maxW ? v.slice(0, maxW - 1) + "…" : v);
+  const data = rows.map(r => cols.map(c => cut(r[c] || "")));
+  const w = cols.map((c, i) => Math.max(c.length, "varchar".length, ...data.map(r => r[i].length)));
+  const center = (s, n) => { const l = Math.floor((n - s.length) / 2); return " ".repeat(l) + s + " ".repeat(n - s.length - l); };
+  const rule = (l, m, r) => `<span class="dim">${l + w.map(n => "─".repeat(n + 2)).join(m) + r}</span>`;
+  const bar = `<span class="dim">│</span>`;
+  const row = (cells, wrap) => bar + cells.map(c => " " + wrap(c) + " ").join(bar) + bar;
+  return [
+    rule("┌", "┬", "┐"),
+    row(cols.map((c, i) => center(c, w[i])), s => `<span class="bold">${esc(s)}</span>`),
+    row(cols.map((c, i) => center("varchar", w[i])), s => `<span class="dim">${esc(s)}</span>`),
+    rule("├", "┼", "┤"),
+    ...data.map(r => row(r.map((v, i) => v.padEnd(w[i])), esc)),
+    rule("└", "┴", "┘"),
+  ].join("\n");
+}
+async function experienceTable() {
+  try {
+    const h = await readHome();
+    const jobs = [...h.jobs].sort((a, b) => b.start.localeCompare(a.start));
+    return `<div class="duck">${duckbox(jobs, XP_COLS)}</div>
+      <div class="dim" style="margin-top:6px">${jobs.length} rows · full text: ${run("cat experience.csv")} · full history: <a href="${RESUME}">resume.pdf</a></div>`;
+  } catch { return failed("experience.csv", "/#experience"); }
 }
 async function aiTxt() {
   try { return `<div class="txt">${await readAI()}</div>`; } catch { return failed("ai-stance.md", "/ai/"); }
@@ -256,7 +284,7 @@ const RENDER = {
     });
     document.querySelector(".lsctl").classList.remove("pending");
   },
-  "cat experience.txt": async () => ($("o-xp").innerHTML = await experienceTxt()),
+  [XP_QUERY]: async () => ($("o-xp").innerHTML = await experienceTable()),
   "cat ai-stance.md": async () => ($("o-ai").innerHTML = await aiTxt()),
 };
 
@@ -295,7 +323,7 @@ const block = html => emit(html, "o");
 const echo = line => { const div = document.createElement("div"); div.className = "line"; div.style.marginTop = "6px"; div.innerHTML = `${PS1} ${esc(line)}`; out.appendChild(div); };
 
 const SLUGS = PROJECTS.map(p => p.slug);
-const FILES = ["about.txt", "experience.txt", "ai-stance.md", "projects/"];
+const FILES = ["about.txt", "experience.csv", "ai-stance.md", "projects/"];
 const PAGES = { home: "/", about: "/", projects: "/projects/", ai: "/ai/", github: "https://github.com/GabeBecker2048", resume: RESUME };
 const clean = a => (a || "").replace(/^(\.\/|~\/)/, "").replace(/^projects\//, "");
 const bySlug = a => PROJECTS.find(p => p.slug === clean(a).replace(/\/$/, ""));
@@ -317,6 +345,7 @@ const COMMANDS = {
   ${run("ls")} [-l] [projects/]       list files
   ${run("cat about.txt")}               print a file; try ${run("cat chesssnake/README.md")}
   ${run("open chesssnake")}             open a project, or: home, projects, ai, github, resume
+  ${run(XP_QUERY, "duckdb")} -c "&lt;query&gt;"         query experience.csv
   grep &lt;text&gt;                 filter the project list
   tag &lt;name&gt;, ${run("tags")}           filter by tag, list tags
   ${run("whoami")}  ${run("resume")}  ${run("history")}  ${run("clear")}  ${run("exit")}
@@ -335,7 +364,7 @@ const COMMANDS = {
     const f = clean(args[0]);
     if (!f) return print(`<span class="dim">usage: cat &lt;file&gt;  (try ${run("ls")})</span>`);
     if (f === "about.txt") return block(await aboutTxt());
-    if (f === "experience.txt") return block(await experienceTxt());
+    if (f === "experience.csv") return block(await experienceCsv());
     if (f === "ai-stance.md") return block(await aiTxt());
     const m = f.match(/^([^/]+)\/README\.md$/i), p = m && bySlug(m[1]);
     if (p) return block(await readme(p));
@@ -360,6 +389,10 @@ const COMMANDS = {
   },
   tags: () => print(allTags().map(t => `<a href="#" data-run="tag ${esc(t.tag.toLowerCase())}">${esc(t.tag.toLowerCase())}</a><span class="dim">(${t.count})</span>`).join("  ")),
   whoami: async () => block(await neofetch()),
+  duckdb: async args => {
+    if (!/experience\.csv/i.test(args.join(" "))) return print(`<span class="r">Catalog Error:</span> the only table here is experience.csv. Try ${run(XP_QUERY)}`);
+    block(await experienceTable());
+  },
   resume: () => COMMANDS.open(["resume"]),
   history: () => print(hist.map((h, i) => `${String(i + 1).padStart(4)}  ${esc(h)}`).join("\n") || `<span class="dim">(empty)</span>`),
   clear: () => { out.innerHTML = ""; toBottom(); },
@@ -471,7 +504,7 @@ function tick() {
 tick(); setInterval(tick, 15000);
 
 // ---------- touch screens: tappable commands ----------
-$("chips").innerHTML = ["help", "ls -l projects/", "cat about.txt", "cat ai-stance.md", "tags", "whoami", "exit"]
+$("chips").innerHTML = ["help", "ls -l projects/", "cat about.txt", "cat experience.csv", "cat ai-stance.md", "tags", "whoami", "exit"]
   .map(c => `<button data-run="${c}">${c}</button>`).join("");
 
 intro();

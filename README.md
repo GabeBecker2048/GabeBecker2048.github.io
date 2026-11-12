@@ -19,7 +19,7 @@ GitHub Pages.)
 
 | What | File |
 |---|---|
-| About, "Currently", skills, experience | `index.html` (hand-written) |
+| About, "Currently", title, skills, experience | `index.html` (hand-written) |
 | My stance on AI | `ai/index.html`, inside `<article id="ai-stance">` (hand-written) |
 | Project data (all pages read this) | `assets/projects.js` |
 | Navbar, footer, contact links | `assets/layout.js` (`SITE` at the top) |
@@ -30,8 +30,10 @@ GitHub Pages.)
 
 The terminal reads the About, experience and AI text from the real pages, so
 edit those once in `index.html` / `ai/index.html` and the terminal follows.
-Keep the ids (`about`, `now`, `experience`, `ai-stance`) and classes
-(`.lead`, `.job`, `.when`) it looks for.
+Keep the ids (`about`, `now`, `experience`, `ai-stance`) and classes it looks
+for: `.lead` for About, and for each experience entry `.job` containing
+`.job-title`, `.org`, `.start`, `.end` and an optional `<p>`. The terminal turns
+the experience entries into `experience.csv` and shows them as a DuckDB query.
 
 ## Add a project
 
