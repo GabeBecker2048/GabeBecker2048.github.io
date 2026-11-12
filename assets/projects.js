@@ -1,5 +1,8 @@
 // Project data + search/filter + the shared project row. Used by every page.
 //
+// The order of this list is the "Recommended" sort (the default on /projects/):
+// move entries up or down to change it.
+//
 // To add a project: add an entry below, copy any folder in /projects/ to
 // /projects/<slug>/ (the stub reads the slug from the URL), and add the URL to
 // /sitemap.xml.
@@ -146,6 +149,13 @@ const PROJECTS = [
 // Every project has its own page at /projects/<slug>/
 PROJECTS.forEach(p => (p.page = `/projects/${p.slug}/`));
 
+// Sort orders for the "Sort by" dropdown. Ties keep the recommended order.
+const SORTS = {
+  recommended: () => 0,
+  az: (a, b) => a.name.localeCompare(b.name),
+  maintained: (a, b) => (a.status === "active" ? 0 : 1) - (b.status === "active" ? 0 : 1),
+};
+
 function allTags() {
   const counts = {};
   PROJECTS.forEach(p => p.tags.forEach(t => (counts[t] = (counts[t] || 0) + 1)));
@@ -160,13 +170,15 @@ const esc = s => String(s).replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;"
  *   tagsEl:  empty container, a <details> dropdown with checkboxes is built inside
  *   activeEl (optional): container that shows the selected tags as removable chips
  *   label:   text on the dropdown button
- *   render(list, state): draws the filtered projects
- * Selected tags must ALL match (AND). State is kept in the URL (?q=...&tag=...).
+ *   sortEl (optional): <select> whose option values are keys of SORTS
+ *   render(list, state): draws the filtered, sorted projects
+ * Selected tags must ALL match (AND). State is kept in the URL (?q=...&tag=...&sort=...).
  */
-function setupFilter({ search, tagsEl, activeEl, label = "Tags", render }) {
+function setupFilter({ search, tagsEl, activeEl, sortEl, label = "Tags", render }) {
   const params = new URLSearchParams(location.search);
-  const state = { q: params.get("q") || "", tags: new Set(params.getAll("tag")) };
+  const state = { q: params.get("q") || "", tags: new Set(params.getAll("tag")), sort: SORTS[params.get("sort")] ? params.get("sort") : "recommended" };
   search.value = state.q;
+  if (sortEl) { sortEl.value = state.sort; sortEl.addEventListener("change", () => { state.sort = sortEl.value; update(); }); }
 
   tagsEl.innerHTML =
     `<details class="tagpick"><summary><span class="tp-label">${esc(label)}</span><span class="tp-n"></span></summary>` +
@@ -205,8 +217,10 @@ function setupFilter({ search, tagsEl, activeEl, label = "Tags", render }) {
     const url = new URLSearchParams();
     if (state.q) url.set("q", state.q);
     state.tags.forEach(t => url.append("tag", t));
+    if (state.sort !== "recommended") url.set("sort", state.sort);
     history.replaceState(null, "", url.toString() ? "?" + url : location.pathname);
-    render(PROJECTS.filter(matches), state);
+    const list = PROJECTS.filter(matches);
+    render(list.map((p, i) => [p, i]).sort(([a, i], [b, j]) => SORTS[state.sort](a, b) || i - j).map(([p]) => p), state);
   }
 
   // Any element with data-tag toggles that tag; data-clear resets everything.

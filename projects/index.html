@@ -24,6 +24,13 @@
     <div class="toolbar">
       <input id="q" type="search" placeholder="Search projects  ( / )" aria-label="Search projects">
       <div id="tags"></div>
+      <label class="sortpick"><span>Sort by</span>
+        <select id="sort" aria-label="Sort projects">
+          <option value="recommended">Recommended</option>
+          <option value="maintained">Actively maintained first</option>
+          <option value="az">A–Z</option>
+        </select>
+      </label>
     </div>
     <div class="status"><span id="count"></span><span class="active" id="active"></span></div>
   </div>
@@ -38,6 +45,7 @@ setupFilter({
   search: document.getElementById("q"),
   tagsEl: document.getElementById("tags"),
   activeEl: document.getElementById("active"),
+  sortEl: document.getElementById("sort"),
   label: "Filter by tag",
   render(list, state) {
     document.getElementById("count").textContent = `${list.length} of ${PROJECTS.length} projects`;

@@ -288,7 +288,10 @@ function renderPrompt() {
 ["input", "keyup", "select", "focus", "blur", "click"].forEach(ev => cmd.addEventListener(ev, () => setTimeout(renderPrompt)));
 cmd.addEventListener("input", toBottom);
 
-const print = html => { const div = document.createElement("div"); div.className = "o line"; div.innerHTML = html; out.appendChild(div); };
+// print: short text output (keeps spaces/newlines). block: rendered HTML (tables, neofetch), whitespace collapsed.
+const emit = (html, cls) => { const div = document.createElement("div"); div.className = cls; div.innerHTML = html; out.appendChild(div); };
+const print = html => emit(html, "o line");
+const block = html => emit(html, "o");
 const echo = line => { const div = document.createElement("div"); div.className = "line"; div.style.marginTop = "6px"; div.innerHTML = `${PS1} ${esc(line)}`; out.appendChild(div); };
 
 const SLUGS = PROJECTS.map(p => p.slug);
@@ -321,9 +324,9 @@ const COMMANDS = {
 <span class="dim">Tab completes · ↑/↓ history · Ctrl+L clears · Ctrl+C cancels · Ctrl+B then 0-3 switches window</span></div>`),
   ls: async args => {
     const long = args.includes("-l"), target = args.filter(a => !a.startsWith("-"))[0];
-    if (!target) return print(long ? `<div class="ls" style="grid-template-columns:auto auto 1fr">${FILES.map(f => `<span class="dim">${f.endsWith("/") ? "drwxr-xr-x" : "-rw-r--r--"}</span><span class="dim">gabe</span>${f.endsWith("/") ? `<a class="bold" href="#" data-run="ls -l projects/">projects/</a>` : run("cat " + f, f)}`).join("")}</div>`
+    if (!target) return (long ? block : print)(long ? `<div class="ls" style="grid-template-columns:auto auto 1fr">${FILES.map(f => `<span class="dim">${f.endsWith("/") ? "drwxr-xr-x" : "-rw-r--r--"}</span><span class="dim">gabe</span>${f.endsWith("/") ? `<a class="bold" href="#" data-run="ls -l projects/">projects/</a>` : run("cat " + f, f)}`).join("")}</div>`
       : FILES.map(f => (f.endsWith("/") ? `<a class="bold" href="#" data-run="ls projects/">${f}</a>` : run("cat " + f, f))).join("  "));
-    if (/^(\.\/|~\/)?projects\/?$/.test(target)) return print(long ? lsRows(PROJECTS) : PROJECTS.map(p => `<a class="bold" href="${p.page}">${p.slug}/</a>`).join("  "));
+    if (/^(\.\/|~\/)?projects\/?$/.test(target)) return (long ? block : print)(long ? lsRows(PROJECTS) : PROJECTS.map(p => `<a class="bold" href="${p.page}">${p.slug}/</a>`).join("  "));
     const p = bySlug(target);
     if (p) return print(p.private ? `<span class="r">ls: cannot open directory '${p.slug}/': Permission denied</span>` : run(`cat ${p.slug}/README.md`));
     print(`<span class="r">ls: cannot access '${esc(target)}': No such file or directory</span>`);
@@ -331,11 +334,11 @@ const COMMANDS = {
   cat: async args => {
     const f = clean(args[0]);
     if (!f) return print(`<span class="dim">usage: cat &lt;file&gt;  (try ${run("ls")})</span>`);
-    if (f === "about.txt") return print(await aboutTxt());
-    if (f === "experience.txt") return print(await experienceTxt());
-    if (f === "ai-stance.md") return print(await aiTxt());
+    if (f === "about.txt") return block(await aboutTxt());
+    if (f === "experience.txt") return block(await experienceTxt());
+    if (f === "ai-stance.md") return block(await aiTxt());
     const m = f.match(/^([^/]+)\/README\.md$/i), p = m && bySlug(m[1]);
-    if (p) return print(await readme(p));
+    if (p) return block(await readme(p));
     if (bySlug(f)) return print(`<span class="r">cat: ${esc(f)}: Is a directory</span> <span class="dim">try</span> ${run(`cat ${bySlug(f).slug}/README.md`)}`);
     print(`<span class="r">cat: ${esc(f)}: No such file or directory</span>`);
   },
@@ -356,7 +359,7 @@ const COMMANDS = {
     print(`<span class="dim">filtered the project list by ${esc(t.tag)}</span> · <a href="#" data-win="1">jump to it</a>`);
   },
   tags: () => print(allTags().map(t => `<a href="#" data-run="tag ${esc(t.tag.toLowerCase())}">${esc(t.tag.toLowerCase())}</a><span class="dim">(${t.count})</span>`).join("  ")),
-  whoami: async () => print(await neofetch()),
+  whoami: async () => block(await neofetch()),
   resume: () => COMMANDS.open(["resume"]),
   history: () => print(hist.map((h, i) => `${String(i + 1).padStart(4)}  ${esc(h)}`).join("\n") || `<span class="dim">(empty)</span>`),
   clear: () => { out.innerHTML = ""; toBottom(); },
