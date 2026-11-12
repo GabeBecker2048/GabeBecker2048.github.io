@@ -6,9 +6,9 @@ const SITE = {
   domain: "https://gabebecker.com",
   avatar: "https://avatars.githubusercontent.com/u/78775796?v=4",
   github: "https://github.com/GabeBecker2048",
-  resume: "/resume.pdf", // drop the PDF at the repo root
+  resume: "/GabrielBecker_Resume.pdf",
   linkedin: "#",         // TODO
-  email: "#",            // TODO: mailto:you@example.com
+  email: "mailto:gabebecker2048@gmail.com",
 };
 
 document.querySelectorAll("[data-topbar]").forEach(el => {

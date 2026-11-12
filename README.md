@@ -26,7 +26,7 @@ GitHub Pages.)
 | Styles | `assets/site.css` (the terminal has its own styles) |
 | Project page template | `assets/project-page.js` |
 | Terminal | `terminal/index.html` |
-| Résumé | drop `resume.pdf` in the repo root |
+| Résumé | `GabrielBecker_Resume.pdf` in the repo root (replace the file to update it) |
 
 The terminal reads the About, experience and AI text from the real pages, so
 edit those once in `index.html` / `ai/index.html` and the terminal follows.

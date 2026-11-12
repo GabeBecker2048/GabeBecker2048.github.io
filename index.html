@@ -23,29 +23,34 @@
     <img class="avatar" src="https://avatars.githubusercontent.com/u/78775796?v=4" alt="">
     <h1>Gabe Becker</h1>
     <p class="role">Data Engineer</p>
-    <a class="btn primary" href="/resume.pdf">Résumé (PDF)</a>
+    <a class="btn primary" href="/GabrielBecker_Resume.pdf">Résumé (PDF)</a>
     <button class="printlink" onclick="print()">Print this page</button>
     <div class="ext">
-      <a href="https://github.com/GabeBecker2048">GitHub</a><a href="#">LinkedIn</a><a href="#">Email</a>
+      <a href="https://github.com/GabeBecker2048">GitHub</a><a href="#">LinkedIn</a><a href="mailto:gabebecker2048@gmail.com">Email</a>
     </div>
 
     <div class="side-h">Skills</div>
     <div>
       <a class="skill" href="/projects/?tag=Python">Python</a>
       <span class="skill">SQL</span>
-      <a class="skill" href="/projects/?tag=REST">REST</a>
-      <a class="skill" href="/projects/?tag=FastAPI">FastAPI</a>
+      <span class="skill">Airflow</span>
+      <span class="skill">Parquet</span>
       <a class="skill" href="/projects/?tag=PostgreSQL">PostgreSQL</a>
-      <a class="skill" href="/projects/?tag=SQLite">SQLite</a>
-      <a class="skill" href="/projects/?tag=WebSockets">WebSockets</a>
       <a class="skill" href="/projects/?tag=Docker">Docker</a>
+      <span class="skill">AWS</span>
+      <span class="skill">DuckDB</span>
+      <span class="skill">pandas</span>
+      <span class="skill">Polars</span>
+      <span class="skill">Kafka</span>
+      <span class="skill">Spark</span>
+      <a class="skill" href="/projects/?tag=SQLite">SQLite</a>
+      <a class="skill" href="/projects/?tag=FastAPI">FastAPI</a>
+      <a class="skill" href="/projects/?tag=REST">REST</a>
+      <a class="skill" href="/projects/?tag=WebSockets">WebSockets</a>
       <a class="skill" href="/projects/?tag=Linux">Linux</a>
+      <span class="skill">CI/CD</span>
       <a class="skill" href="/projects/?tag=Self-hosted">Self-hosted</a>
       <a class="skill" href="/projects/?tag=Monitoring">Monitoring</a>
-      <a class="skill" href="/projects/?tag=Networking">Networking</a>
-      <a class="skill" href="/projects/?tag=CLI">CLI</a>
-      <span class="skill">Bash</span>
-      <span class="skill">CI/CD</span>
     </div>
     <div class="hint">Green skills link to the projects that use them.</div>
   </aside>
@@ -53,8 +58,8 @@
   <div>
     <section id="about">
       <h2 class="section-h">About</h2>
-      <p class="lead">[A few friendly sentences, longer than a résumé summary: what you like building, how you got into data engineering, what you're looking for next.]</p>
-      <div class="now" id="now"><b>Currently:</b> [what you're working on or learning, e.g. "shipping anchorless 1.x"]</div>
+      <p class="lead">I'm a data engineer in New Orleans. At Code Willing I build and run the pipelines that turn about 200 third-party financial-market datasets, more than 100 TB of them, into one clean, consistent platform: Airflow, Python, SQL and Parquet, plus the tests, CI and staging environment that keep it trustworthy. Outside of work I build and publish open-source Python software, from a chess server to a 24/7 news channel, and I have a soft spot for problems with some math in them. I studied computer science and mathematics at Mississippi State.</p>
+      <div class="now" id="now"><b>Currently:</b> getting Murmur, a daily news-sentiment and stock-price pipeline, ready to go public.</div>
     </section>
 
     <section id="projects">
@@ -68,18 +73,23 @@
            The terminal turns these into experience.csv, so keep the class names. -->
       <div class="xp">
         <div class="job">
-          <div class="head"><b><span class="job-title">[Job title]</span> · <span class="org">[Company]</span></b><span class="when"><span class="start">20XX-XX</span> – <span class="end">Present</span></span></div>
-          <p>[One or two sentences on the work: the systems, the scale, the stack. Bullet points stay in the PDF.]</p>
+          <div class="head"><b><span class="job-title">Data Engineer</span> · <span class="org">Code Willing</span></b><span class="when"><span class="start">2024-04</span> – <span class="end">Present</span></span></div>
+          <p>Production Airflow pipelines in Python and SQL for about 200 financial-market datasets (100+ TB), from daily schedules to event-driven runs. I also maintain the team's CI/CD, built its Docker staging environment, and led a Parquet conversion tool that runs up to 5× faster than the one it replaced.</p>
         </div>
         <div class="job">
-          <div class="head"><b><span class="job-title">[Job title]</span> · <span class="org">[Company]</span></b><span class="when"><span class="start">20XX-XX</span> – <span class="end">20XX-XX</span></span></div>
-          <p>[One sentence.]</p>
+          <div class="head"><b><span class="job-title">Mathematics Teacher</span> · <span class="org">De La Salle High School</span></b><span class="when"><span class="start">2023-10</span> – <span class="end">2023-12</span></span></div>
+          <p>Taught two sections of Algebra 2 to more than 40 students.</p>
         </div>
         <div class="job">
-          <div class="head"><b><span class="job-title">[Degree]</span> · <span class="org">[School]</span></b><span class="when"><span class="start">20XX</span> – <span class="end">20XX</span></span></div>
+          <div class="head"><b><span class="job-title">Assistant Instructor</span> · <span class="org">Delgado GenCyber Camp</span></b><span class="when"><span class="start">2023-05</span> – <span class="end">2023-07</span></span></div>
+          <p>Helped teach a month-long cybersecurity camp for high school students.</p>
+        </div>
+        <div class="job">
+          <div class="head"><b><span class="job-title">B.S. Computer Science, Minor in Mathematics</span> · <span class="org">Mississippi State University</span></b><span class="when"><span class="start">2019-08</span> – <span class="end">2023-05</span></span></div>
+          <p>Concentration in Artificial Intelligence. President's Scholar.</p>
         </div>
       </div>
-      <p class="note">The full history is in my <a href="/resume.pdf">résumé (PDF)</a>.</p>
+      <p class="note">The full history is in my <a href="/GabrielBecker_Resume.pdf">résumé (PDF)</a>.</p>
     </section>
   </div>
 </main>
