@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 400" width="640" height="400" font-family="DejaVu Sans, Verdana, sans-serif">
+  <rect width="640" height="400" fill="#14171b"/>
+  <rect x="19.5" y="6.5" width="323" height="387" fill="#000" stroke="#2b3138"/>
+  <text x="368" y="62" fill="#e4e7eb" font-size="27" font-weight="bold">Tetris AI</text>
+  <g fill="#9aa4b0" font-size="13.5">
+    <text x="368" y="92">For every piece it tries each</text>
+    <text x="368" y="111">rotation and column, scores the</text>
+    <text x="368" y="130">board that results, and keeps</text>
+    <text x="368" y="149">the best one.</text>
+  </g>
+  <text x="368" y="196" fill="#9aa4b0" font-size="11">WHAT THE SCORE IS MADE OF</text>
+  <g font-size="14">
+    <g transform="translate(368 212)"><text y="14" fill="#e4e7eb">max height</text><text x="252" y="14" fill="#9aa4b0" text-anchor="end">35%</text><rect y="22" width="252" height="5" rx="2.5" fill="#2b3138"/><rect y="22" width="88" height="5" rx="2.5" fill="#6fcf97"/></g>
+    <g transform="translate(368 254)"><text y="14" fill="#e4e7eb">total height</text><text x="252" y="14" fill="#9aa4b0" text-anchor="end">35%</text><rect y="22" width="252" height="5" rx="2.5" fill="#2b3138"/><rect y="22" width="88" height="5" rx="2.5" fill="#6fcf97"/></g>
+    <g transform="translate(368 296)"><text y="14" fill="#e4e7eb">holes</text><text x="252" y="14" fill="#9aa4b0" text-anchor="end">20%</text><rect y="22" width="252" height="5" rx="2.5" fill="#2b3138"/><rect y="22" width="50" height="5" rx="2.5" fill="#6fcf97"/></g>
+    <g transform="translate(368 338)"><text y="14" fill="#e4e7eb">bumpiness</text><text x="252" y="14" fill="#9aa4b0" text-anchor="end">10%</text><rect y="22" width="252" height="5" rx="2.5" fill="#2b3138"/><rect y="22" width="25" height="5" rx="2.5" fill="#6fcf97"/></g>
+  </g>
+</svg>
