@@ -88,7 +88,9 @@
 <script src="/assets/layout.js"></script>
 <script src="/assets/projects.js"></script>
 <script>
-document.getElementById("featured").innerHTML = PROJECTS.filter(p => p.featured).map(p => projectRow(p, { compact: true })).join("");
+const drawFeatured = () => (document.getElementById("featured").innerHTML = PROJECTS.filter(p => p.featured).map(p => projectRow(p, { compact: true })).join(""));
+drawFeatured();
+loadLive().then(changed => changed && drawFeatured()); // live versions from PyPI/GitHub
 document.getElementById("all-link").textContent = `See all ${PROJECTS.length} projects →`;
 enableRowClicks();
 </script>

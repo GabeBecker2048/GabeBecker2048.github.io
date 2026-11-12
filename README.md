@@ -39,7 +39,9 @@ the experience entries into `experience.csv` and shows them as a DuckDB query.
 
 1. Add an entry to `PROJECTS` in `assets/projects.js` (copy an existing one).
    `featured: true` puts it on the home page. Leave `links.source` out and set
-   `private: true` for a private repo.
+   `private: true` for a private repo. `version` and `updated` are fallbacks:
+   pages replace them with the live PyPI version (if `links.pypi` is set) and
+   the GitHub last-push date (if `links.source` is set).
 2. Copy any folder in `projects/` to `projects/<slug>/` and change the title,
    description and URLs in its `<head>`. The page content comes from the data.
 3. Add `https://gabebecker.com/projects/<slug>/` to `sitemap.xml`.

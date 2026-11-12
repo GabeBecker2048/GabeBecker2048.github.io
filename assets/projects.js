@@ -149,6 +149,42 @@ const PROJECTS = [
 // Every project has its own page at /projects/<slug>/
 PROJECTS.forEach(p => (p.page = `/projects/${p.slug}/`));
 
+/*
+ * Live data: `version` comes from PyPI (projects with links.pypi) and `updated`
+ * from GitHub's last push (projects with links.source). The values typed in
+ * PROJECTS above are the fallback: pages render with them right away, then call
+ * loadLive() and re-render if anything changed. Results are cached in the
+ * visitor's browser for an hour to stay far below GitHub's 60 requests/hour.
+ */
+const LIVE_KEY = "live-projects", LIVE_TTL = 60 * 60 * 1000;
+let livePromise;
+function loadLive() {
+  return (livePromise ||= (async () => {
+    let live = null;
+    try { const c = JSON.parse(localStorage.getItem(LIVE_KEY)); if (c && Date.now() - c.at < LIVE_TTL) live = c.data; } catch {}
+    if (!live) {
+      live = {};
+      const set = (slug, key, val) => { if (val) (live[slug] ||= {})[key] = val; };
+      const repoOf = p => p.links.source?.split("/").pop();
+      await Promise.allSettled([
+        fetch("https://api.github.com/users/GabeBecker2048/repos?per_page=100")
+          .then(r => (r.ok ? r.json() : []))
+          .then(repos => PROJECTS.forEach(p => set(p.slug, "updated", repos.find(r => r.name === repoOf(p))?.pushed_at?.slice(0, 10)))),
+        ...PROJECTS.filter(p => p.links.pypi).map(p =>
+          fetch(`https://pypi.org/pypi/${p.links.pypi.match(/project\/([^/]+)/)[1]}/json`)
+            .then(r => (r.ok ? r.json() : null))
+            .then(d => set(p.slug, "version", d?.info?.version))),
+      ]);
+      if (Object.keys(live).length) { try { localStorage.setItem(LIVE_KEY, JSON.stringify({ at: Date.now(), data: live })); } catch {} }
+    }
+    let changed = false;
+    PROJECTS.forEach(p => {
+      for (const [k, v] of Object.entries(live[p.slug] || {})) if (v !== p[k]) { p[k] = v; changed = true; }
+    });
+    return changed;
+  })());
+}
+
 // Sort orders for the "Sort by" dropdown. Ties keep the recommended order.
 const SORTS = {
   recommended: () => 0,

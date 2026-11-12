@@ -150,8 +150,12 @@ into LinkedIn or Slack to see the preview card.
 
 ## 4. Keeping it current (not blocking)
 
-- **New release of a project:** update its `version` and `updated` in
-  `assets/projects.js`. These are typed in by hand, not read from PyPI.
+- **New release of a project:** nothing to do. Each page fetches the latest
+  version from PyPI and the last-push date from GitHub when it loads (cached
+  for an hour per visitor). The `version` and `updated` values in
+  `assets/projects.js` are only a fallback for when those can't be reached;
+  refresh them now and then so the fallback isn't far behind. Projects without
+  PyPI or a public repo (e.g. homelab) always use the typed-in values.
 - **New project:** see "Add a project" in `README.md` (data entry + copy a
   stub folder + add the URL to `sitemap.xml`).
 - **Later:** per-project docs with MkDocs on each repo's GitHub Pages

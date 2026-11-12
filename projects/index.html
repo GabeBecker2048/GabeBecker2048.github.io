@@ -41,7 +41,7 @@
 <script src="/assets/layout.js"></script>
 <script src="/assets/projects.js"></script>
 <script>
-setupFilter({
+const filter = setupFilter({
   search: document.getElementById("q"),
   tagsEl: document.getElementById("tags"),
   activeEl: document.getElementById("active"),
@@ -54,6 +54,7 @@ setupFilter({
       : `<div class="empty">No projects match. <a href="#" data-clear>Clear search and filters</a></div>`;
   },
 });
+loadLive().then(changed => changed && filter.update()); // live versions from PyPI/GitHub
 enableRowClicks();
 </script>
 </body>

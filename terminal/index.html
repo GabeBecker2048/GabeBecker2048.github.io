@@ -508,6 +508,7 @@ $("chips").innerHTML = ["help", "ls -l projects/", "cat about.txt", "cat experie
   .map(c => `<button data-run="${c}">${c}</button>`).join("");
 
 intro();
+loadLive().then(changed => changed && filter?.update()); // live versions from PyPI/GitHub
 </script>
 </body>
 </html>
