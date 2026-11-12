@@ -13,6 +13,9 @@
 //   started  when work began: "YYYY", "YYYY-MM" or "YYYY-MM-DD", as precise as
 //            is known. This is not always the repo's first commit (a prototype
 //            may have lived elsewhere). Drives the "Newest/Oldest first" sorts.
+//   updated  the last change, "YYYY-MM-DD". Public repos get the live date from
+//            GitHub. Use "continuous" for something that changes all the time
+//            and has no public repo (the homelab): no date is shown.
 //   links.docs   the project's own docs site, when it has one. Without it,
 //                public projects get a "Docs in the repo" link to the README.
 //
@@ -194,7 +197,7 @@ const PROJECTS = [
     version: null,
     status: "active",
     started: "2026-06-17",
-    updated: "2026-11-08",
+    updated: "continuous",
     tags: ["Docker", "Linux", "Self-hosted", "Monitoring", "Networking", "Automation", "Media"],
     install: null,
     image: null,
@@ -301,6 +304,7 @@ const SORTS = {
 const STATUS_TEXT = { active: "Maintained", wip: "Work in progress, not released yet", archived: "Archived" };
 const pillText = p => (p.status === "wip" ? "WIP" + (p.version ? ` · v${p.version}` : "") : p.version ? `v${p.version}` : p.status === "archived" ? "archived" : "ongoing");
 const startedYear = p => p.started.slice(0, 4);
+const updatedText = p => (p.updated === "continuous" ? "Continuously" : p.updated);
 // Where a project's docs are: its own site, or else the README of a public repo.
 const docsLink = p => (p.links.docs ? { href: p.links.docs, label: p.links.docsLabel || "Docs" }
   : p.links.source ? { href: p.links.source + "#readme", label: "Docs in the repo" } : null);

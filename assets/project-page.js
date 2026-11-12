@@ -36,7 +36,7 @@
         <div><b>Latest</b>${p.version ? "v" + p.version : "n/a"}</div>
         <div><b>Status</b>${STATUS_TEXT[p.status]}</div>
         <div><b>Started</b>${p.started}</div>
-        <div><b>Updated</b>${p.updated}</div>
+        <div><b>Updated</b>${updatedText(p)}</div>
       </div>
       ${p.image ? `<img class="shot" src="${p.image}" alt="${esc(p.name)} screenshot">` : ""}
       <h2 id="overview">Overview</h2>
