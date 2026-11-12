@@ -154,7 +154,7 @@ async function readHome() {
   return {
     role: norm(d.querySelector(".profile .role")?.textContent),
     skills: [...d.querySelectorAll(".profile .skill")].map(s => norm(s.textContent)),
-    about: norm(d.querySelector("#about .lead")?.textContent),
+    about: [...d.querySelectorAll("#about .lead")].map(p => norm(p.textContent)).join("\n\n"),
     now: norm(d.querySelector("#now")?.textContent),
     jobs: [...d.querySelectorAll("#experience .job")].map(j => ({
       start: norm(j.querySelector(".start")?.textContent),
