@@ -1,1 +1,111 @@
-Hello World!
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Gabe Becker · Data Engineer</title>
+<meta name="description" content="Gabe Becker, data engineer. Open-source Python projects, experience and résumé.">
+<link rel="canonical" href="https://gabebecker.com/">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Gabe Becker · Data Engineer">
+<meta property="og:description" content="Open-source Python projects, experience and résumé.">
+<meta property="og:url" content="https://gabebecker.com/">
+<meta property="og:image" content="https://avatars.githubusercontent.com/u/78775796?v=4">
+<meta name="twitter:card" content="summary">
+<link rel="icon" href="https://avatars.githubusercontent.com/u/78775796?v=4">
+<link rel="stylesheet" href="/assets/site.css">
+</head>
+<body>
+<header data-topbar="home"></header>
+
+<main class="wrap home">
+  <aside class="profile">
+    <img class="avatar" src="https://avatars.githubusercontent.com/u/78775796?v=4" alt="">
+    <h1>Gabe Becker</h1>
+    <p class="role">Data Engineer</p>
+    <a class="btn primary" href="/GabrielBecker_Resume.pdf">Résumé (PDF)</a>
+    <button class="printlink" onclick="print()">Print this page</button>
+    <div class="ext">
+      <a href="https://github.com/GabeBecker2048">GitHub</a><a href="https://www.linkedin.com/in/gabriel-becker-a98084124">LinkedIn</a><a href="mailto:gabebecker2048@gmail.com">Email</a>
+    </div>
+
+    <div class="side-h">Skills</div>
+    <div>
+      <a class="skill" href="/projects/?tag=Python">Python</a>
+      <span class="skill">SQL</span>
+      <span class="skill">Airflow</span>
+      <a class="skill" href="/projects/?tag=Parquet">Parquet</a>
+      <a class="skill" href="/projects/?tag=PostgreSQL">PostgreSQL</a>
+      <a class="skill" href="/projects/?tag=Docker">Docker</a>
+      <span class="skill">AWS</span>
+      <span class="skill">DuckDB</span>
+      <span class="skill">pandas</span>
+      <span class="skill">Polars</span>
+      <span class="skill">Kafka</span>
+      <span class="skill">Spark</span>
+      <a class="skill" href="/projects/?tag=SQLite">SQLite</a>
+      <a class="skill" href="/projects/?tag=FastAPI">FastAPI</a>
+      <a class="skill" href="/projects/?tag=REST">REST</a>
+      <a class="skill" href="/projects/?tag=WebSockets">WebSockets</a>
+      <a class="skill" href="/projects/?tag=Linux">Linux</a>
+      <span class="skill">CI/CD</span>
+      <a class="skill" href="/projects/?tag=Self-hosted">Self-hosted</a>
+      <a class="skill" href="/projects/?tag=Monitoring">Monitoring</a>
+    </div>
+    <div class="hint">Green skills link to the projects that use them.</div>
+  </aside>
+
+  <div>
+    <section id="about">
+      <h2 class="section-h">About</h2>
+      <!-- The terminal shows every <p class="lead"> in this section, as plain text. -->
+      <p class="lead">I'm a data engineer in New Orleans. At Code Willing I build and maintain the pipelines that take about 200 third-party financial datasets, more than 100 TB in total, and deliver them clean, consistent and on time. Most of the work is Airflow, Python, SQL and Parquet. The rest is what keeps it reliable: tests, CI, and a staging environment, so that nothing runs for the first time in production.</p>
+      <p class="lead">Outside of work I build my own software, and I'll admit that most of it starts as a gimmick. I don't mind that. A gimmick is a small idea with a clear finish line, which makes it a good excuse to do everything properly: tests, documentation, releases, and a server at home where the results run around the clock. The projects below are what came out of it.</p>
+      <p class="lead">I studied computer science and mathematics at Mississippi State, and the math is still the part I enjoy most. The problems I like best have an exact answer and data messy enough to make it hard to reach. Lately most of them have been about financial markets. If you are working on something like that, <a href="mailto:gabebecker2048@gmail.com">I'm glad to talk</a>.</p>
+      <div class="now" id="now"><b>Currently:</b> getting Murmur ready to go public.</div>
+    </section>
+
+    <section id="projects">
+      <h2 class="section-h">Projects <a href="/projects/" id="all-link">See all projects →</a></h2>
+      <div id="featured"><noscript><p><a href="/projects/">See my projects</a></p></noscript></div>
+    </section>
+
+    <section id="experience">
+      <h2 class="section-h">Experience</h2>
+      <!-- Each entry: job-title, org, start, end (YYYY-MM or YYYY; end can be "Present") and an optional <p>.
+           The terminal turns these into experience.csv, so keep the class names. -->
+      <div class="xp">
+        <div class="job">
+          <div class="head"><b><span class="job-title">Data Engineer</span> · <span class="org">Code Willing</span></b><span class="when"><span class="start">2024-04</span> – <span class="end">Present</span></span></div>
+          <p>Production Airflow pipelines in Python and SQL for about 200 financial-market datasets (100+ TB), from daily schedules to event-driven runs. I also maintain the team's CI/CD, built its Docker staging environment, and led a Parquet conversion tool that runs up to 5× faster than the one it replaced.</p>
+        </div>
+        <div class="job">
+          <div class="head"><b><span class="job-title">Mathematics Teacher</span> · <span class="org">De La Salle High School</span></b><span class="when"><span class="start">2023-10</span> – <span class="end">2023-12</span></span></div>
+          <p>Taught two sections of Algebra 2 to more than 40 students.</p>
+        </div>
+        <div class="job">
+          <div class="head"><b><span class="job-title">Assistant Instructor</span> · <span class="org">Delgado GenCyber Camp</span></b><span class="when"><span class="start">2023-05</span> – <span class="end">2023-07</span></span></div>
+          <p>Helped teach a month-long cybersecurity camp for high school students.</p>
+        </div>
+        <div class="job">
+          <div class="head"><b><span class="job-title">B.S. Computer Science, Minor in Mathematics</span> · <span class="org">Mississippi State University</span></b><span class="when"><span class="start">2019-08</span> – <span class="end">2023-05</span></span></div>
+          <p>Concentration in Artificial Intelligence. President's Scholar.</p>
+        </div>
+      </div>
+      <p class="note">The full history is in my <a href="/GabrielBecker_Resume.pdf">résumé (PDF)</a>.</p>
+    </section>
+  </div>
+</main>
+
+<footer data-foot></footer>
+<script src="/assets/layout.js"></script>
+<script src="/assets/projects.js"></script>
+<script>
+const drawFeatured = () => (document.getElementById("featured").innerHTML = PROJECTS.slice(0, FEATURED_COUNT).map(p => projectRow(p, { compact: true })).join(""));
+drawFeatured();
+loadLive().then(changed => changed && drawFeatured()); // live versions from PyPI/GitHub
+document.getElementById("all-link").textContent = `See all ${PROJECTS.length} projects →`;
+enableRowClicks();
+</script>
+</body>
+</html>
