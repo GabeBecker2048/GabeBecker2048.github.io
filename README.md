@@ -51,17 +51,3 @@ the experience entries into `experience.csv` and shows them as a DuckDB query.
 2. Copy any folder in `projects/` to `projects/<slug>/` and change the title,
    description and URLs in its `<head>`. The page content comes from the data.
 3. Add `https://gabebecker.com/projects/<slug>/` to `sitemap.xml`.
-
-## Domain (gabebecker.com)
-
-The `CNAME` file tells GitHub Pages to serve the site on gabebecker.com. One-time
-setup:
-
-1. At the domain registrar, add DNS records for the apex domain:
-   - `A`: 185.199.108.153, 185.199.109.153, 185.199.110.153, 185.199.111.153
-   - `AAAA`: 2606:50c0:8000::153, 2606:50c0:8001::153, 2606:50c0:8002::153, 2606:50c0:8003::153
-   - `www` as a `CNAME` to `gabebecker2048.github.io`
-2. After this is merged to `main`: repo Settings → Pages → Custom domain
-   `gabebecker.com`, wait for the DNS check, then tick **Enforce HTTPS**.
-3. Optional but recommended: verify the domain under your GitHub account
-   Settings → Pages, so nobody else can claim it for their Pages site.
