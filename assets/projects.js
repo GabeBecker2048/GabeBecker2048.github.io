@@ -21,6 +21,7 @@
 //            there are the sources of the .png files). imageAlt describes it.
 //   links.docs   the project's own docs site, when it has one. Without it,
 //                public projects get a "Docs in the repo" link to the README.
+//   links.more   extra links for the project page: [{ href, label }].
 //
 // To add a project: add an entry below, copy any folder in /projects/ to
 // /projects/<slug>/ (the stub reads the slug from the URL), and add the URL to
@@ -32,13 +33,14 @@ const PROJECTS = [
   {
     slug: "murmur",
     name: "Murmur",
-    private: true,
     tagline: "Does news predict prices, follow them, or move with them?",
     desc: "A daily pipeline that scores news-headline sentiment for the 100 largest US companies, stores it next to their stock prices, and tests whether news leads, lags or moves with returns.",
     long: [
       "Murmur is a daily data pipeline built to answer one question: does news predict stock prices, follow them, or move with them? Every evening it collects headlines for the 100 largest US companies, scores the sentiment of each one with FinBERT, stores the scores next to that day's prices, and correlates the two.",
       "Each trading day is split into an overnight and an intraday news window, and each window is compared with the overnight, intraday and daily return one day back, on the same day, and one day ahead. A shuffle test checks whether a result depends on matching each company to its own news, or would appear from market-wide moves alone. The store is SQLite and every write is an upsert, so any day can be rerun safely. The results are published as Parquet datasets behind a REST API and a dashboard.",
-      "It began in 2023 as a small project with two collaborators that compared headline sentiment with stock prices, and was rebuilt in 2026 as a pipeline that runs every day on my home server. It is still a work in progress: the source will be public once the remaining work is done and the original contributors have agreed.",
+      "Its first full year (November 2025 to November 2026: 251 trading sessions, about 252,000 headlines) gives a clear answer: news moves with stock prices on the same day and trails them a little, but it does not predict the next day. The same-day correlation is r = 0.16. It is about the company, not the market's mood: it stays at 0.15 with the market's move taken out, is positive on 89% of days, and drops to 0.02 when headlines are shuffled between companies. Headlines still lean toward the previous day's move (0.09), and against the next day's return the correlation is -0.008, indistinguishable from zero.",
+      "The link is real but small: same-day sentiment accounts for about 2.6% of the variation in daily returns, and daily data cannot tell whether the news reports the move or causes it. The findings page has the checks and the caveats, and every number is published as data.",
+      "It began in 2023 as a small project with two collaborators that compared headline sentiment with stock prices, and was rebuilt in 2026 as a pipeline that runs every day on my home server. Version 1.0.0 came out in November 2026, with the source and all of its data public.",
     ],
     features: [
       "Its own index: the 100 largest US companies by market cap, rebuilt every month, with membership recorded per day so any past day can be reconstructed.",
@@ -46,17 +48,24 @@ const PROJECTS = [
       "Sentiment scored with FinBERT on a CPU.",
       "Correlations at lags of -1, 0 and +1 days, per news source and pooled, daily and over rolling horizons.",
       "One Docker image in three roles: the API and dashboard, a scheduler, and a single worker with a job queue. Failed runs are retried, and a restart never loses a day.",
-      "Published datasets in Parquet, with a manifest and a data dictionary.",
+      "Free datasets updated daily, in Parquet or CSV, with a manifest, a data dictionary, an API and a feed.",
     ],
-    version: "0.8.2",
-    status: "wip",
+    version: "1.0.0",
+    status: "active",
     started: "2023-11-25",
-    updated: "2026-11-08",
+    updated: "2026-11-24",
     tags: ["Python", "Data pipeline", "Finance", "Machine learning", "SQLite", "Parquet", "FastAPI", "REST", "Docker"],
     install: null,
     image: "/assets/img/murmur.png",
     imageAlt: "Chart: correlation between news sentiment and stock returns one session back, in the same session, and one session ahead",
-    links: {},
+    links: {
+      source: "https://github.com/GabeBecker2048/murmur",
+      docs: "https://murmur.gabebecker.com/",
+      docsLabel: "Dashboard and data",
+      more: [{ href: "https://murmur.gabebecker.com/findings", label: "Findings" }],
+      docker: "https://github.com/GabeBecker2048/murmur/pkgs/container/murmur",
+      issues: "https://github.com/GabeBecker2048/murmur/issues",
+    },
   },
   {
     slug: "chesssnake",
@@ -208,6 +217,41 @@ const PROJECTS = [
     image: "/assets/img/homelab.png",
     imageAlt: "Diagram: a Raspberry Pi in front of a Docker host, with both machines' configs committed to one git repository",
     links: {},
+  },
+  {
+    slug: "obj2pbt",
+    name: "obj2pbt",
+    tagline: "Bring your own 3D models into Core.",
+    desc: "Converts .obj models from Blender or Cinema 4D into .pbt templates for the Core game engine. A 2021 team project: I did the linear algebra and wrote the documentation.",
+    long: [
+      "obj2pbt converts 3D models made in Blender, Cinema 4D or similar software into .pbt files, the template format of Core, Manticore Games' platform for making and publishing games. Core creators could only build from the engine's own shapes, so games tended to look alike; obj2pbt let them bring in their own models. It was built in 2021 by five friends from the Core community.",
+      "Core cannot place an arbitrary triangle, but it can place a wedge, and a wedge squashed to a thickness of 0.002 is a flat right triangle. So the converter splits every triangle of a model into two right triangles and places each one as a wedge. That math was my part: a vector projection onto the triangle's longest side splits it in two, the lengths of the pieces give each wedge's position and scale, and a rotation matrix built from the triangle's unit vectors gives the Euler angles Core expects.",
+      "I also wrote the documentation: how to use it, the code, the derivation and the tests. The credits on its release read: Rivvnik, logic and programming; Zolge, logic and visuals; Aphrim, .pbt generation; Waffle, rotation framework; Zanth (me), math and documentation. It was written in Python and shipped as a Windows program.",
+    ],
+    features: [
+      "Converts any triangulated .obj file into a .pbt template that Core can load.",
+      "Splits each triangle into two right triangles with a vector projection.",
+      "Places each one as a wedge 0.002 thick, with position, scale and rotation computed from the triangle.",
+      "Documentation with the full derivation and tests of position, scale and rotation.",
+      "A Windows program: pick a file, and the .pbt appears next to it.",
+    ],
+    version: null,
+    status: "archived",
+    started: "2021-08-06",
+    updated: "2022-02-03",
+    tags: ["Python", "Math", "3D", "Games"],
+    install: null,
+    image: "/assets/img/obj2pbt.jpg",
+    imageAlt: "The obj2pbt logo next to the words Import custom objects!, with the Core and OBJ2PBT logos",
+    links: {
+      source: "https://github.com/R-i-v-v/obj2pbt",
+      docs: "/assets/docs/obj2pbt-documentation.pdf",
+      docsLabel: "Documentation (PDF)",
+      more: [
+        { href: "https://obj2pbt.weebly.com/", label: "Website" },
+        { href: "https://www.coregames.com/games/b2653e/custom-objects-in-core", label: "On Core" },
+      ],
+    },
   },
   {
     slug: "tetris-ai-demo",

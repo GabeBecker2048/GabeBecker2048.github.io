@@ -45,9 +45,11 @@ the experience entries into `experience.csv` and shows them as a DuckDB query.
    Newest/Oldest sorts. `status` is `active`, `wip` or `archived`. Leave
    `links.source` out and set `private: true` for a private repo. Set
    `links.docs` when the project has its own docs site; without it a public
-   project links to its README. `version` and `updated` are fallbacks: pages
-   replace them with the live PyPI version (if `links.pypi` is set) and the
-   GitHub last-push date (if `links.source` is set).
+   project links to its README. `links.more` adds other links to the
+   project's page, as `[{ href, label }]`. `version` and `updated` are
+   fallbacks: pages replace them with the live PyPI version (if `links.pypi`
+   is set) and the GitHub last-push date (if `links.source` is one of my own
+   repos; a repo under someone else's account keeps the typed date).
 2. Copy any folder in `projects/` to `projects/<slug>/` and change the title,
    description and URLs in its `<head>`. The page content comes from the data.
 3. Add `https://gabebecker.com/projects/<slug>/` to `sitemap.xml`.

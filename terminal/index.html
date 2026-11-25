@@ -332,7 +332,10 @@ const run = (s, label = s) => `<a href="#" data-run="${esc(s)}">${esc(label)}</a
 async function readme(p) {
   if (p.private) return `<span class="r">cat: ${p.slug}/README.md: Permission denied</span> <span class="dim">(private repository)</span> · ${run("open " + p.slug)}`;
   try {
-    const r = await fetch(`https://raw.githubusercontent.com/GabeBecker2048/${p.slug}/main/README.md`);
+    const repo = p.links.source?.replace("https://github.com/", "");
+    if (!repo) throw 0;
+    const r = await fetch(`https://raw.githubusercontent.com/${repo}/main/README.md`);
+    if (r.status === 404) return `<span class="r">cat: ${p.slug}/README.md: No such file or directory</span> · ${run("open " + p.slug)}`;
     if (!r.ok) throw 0;
     const lines = (await r.text()).split("\n"), N = 40;
     return `<div class="txt">${esc(lines.slice(0, N).join("\n"))}</div>` +
