@@ -7,7 +7,7 @@ const SITE = {
   avatar: "https://avatars.githubusercontent.com/u/78775796?v=4",
   github: "https://github.com/GabeBecker2048",
   resume: "/GabrielBecker_Resume.pdf",
-  linkedin: "https://www.linkedin.com/in/gabriel-becker-a98084124",
+  linkedin: "https://www.linkedin.com/in/gabe-becker/",
   email: "mailto:gabebecker2048@gmail.com",
 };
 
