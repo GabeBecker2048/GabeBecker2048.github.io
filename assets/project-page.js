@@ -20,7 +20,8 @@
     const linkbar = [
       docs ? `<a href="${docs.href}">${esc(docs.label)}</a>` : "",
       L.source ? `<a href="${L.source}">Source</a>` : `<span class="private">${p.status === "wip" ? "Source not public yet" : "Private repository"}</span>`,
-      L.pypi ? `<a href="${L.source}/blob/main/CHANGELOG.md">Changelog</a>` : "",
+      ...(L.more || []).map(m => `<a href="${m.href}">${esc(m.label)}</a>`),
+      L.source && (L.pypi || L.docker) ? `<a href="${L.source}/blob/main/CHANGELOG.md">Changelog</a>` : "",
       L.pypi ? `<a href="${L.pypi}">PyPI</a>` : "",
       L.docker ? `<a href="${L.docker}">Docker image</a>` : "",
       L.issues ? `<a href="${L.issues}">Report a bug</a>` : "",
