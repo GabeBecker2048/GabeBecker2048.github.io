@@ -31,7 +31,6 @@ main.wrap { flex:1; padding-top:40px; padding-bottom:24px; }
 .topbar { border-bottom:1px solid var(--line); background:var(--panel); }
 .topbar .in { max-width:var(--container); margin:0 auto; padding:12px 20px; display:flex; justify-content:space-between; align-items:center; gap:16px; }
 .brand { display:flex; align-items:center; gap:10px; color:var(--fg); font:600 1.1rem "Source Serif 4", Georgia, serif; white-space:nowrap; }
-.brand img { width:28px; height:28px; border-radius:50%; }
 .brand:hover { text-decoration:none; }
 .topbar nav { display:flex; gap:22px; white-space:nowrap; }
 .topbar nav a { color:var(--muted); }
