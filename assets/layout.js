@@ -4,7 +4,6 @@
 const SITE = {
   name: "Gabe Becker",
   domain: "https://gabebecker.com",
-  avatar: "https://avatars.githubusercontent.com/u/78775796?v=4",
   github: "https://github.com/GabeBecker2048",
   resume: "/GabrielBecker_Resume.pdf",
   linkedin: "https://www.linkedin.com/in/gabe-becker/",
@@ -16,7 +15,7 @@ document.querySelectorAll("[data-topbar]").forEach(el => {
   const item = (key, href, label) => `<a href="${href}"${on === key ? ' class="on" aria-current="page"' : ""}>${label}</a>`;
   el.className = "topbar";
   el.innerHTML = `<div class="in">
-    <a class="brand" href="/"><img src="${SITE.avatar}" alt=""><span class="bn">${SITE.name}</span></a>
+    <a class="brand" href="/"><span class="bn">${SITE.name}</span></a>
     <nav>
       ${item("projects", "/projects/", "Projects")}
       ${item("ai", "/ai/", "AI")}
